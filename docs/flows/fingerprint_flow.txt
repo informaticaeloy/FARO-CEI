@@ -1,0 +1,18 @@
+[ Evento / Baliza ]
+        |
+        v
+[ Captura señales ]
+        |
+        v
+[ Fingerprint Engine ]
+        |
+        +--> Checks ponderados
+        |
+        +--> Score agregado
+        |
+        v
+[ Confidence Level ]
+        |
+        +--> LOW
+        +--> MEDIUM
+        +--> HIGH
