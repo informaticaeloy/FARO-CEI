@@ -169,3 +169,18 @@ source venv/bin/activate  # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 python main.py
 python main.py
+```
+
+## 📸 Capturas
+
+### Login seguro
+![Login](docs/screenshots/login.png)
+
+### Dashboard operativo
+![Dashboard](docs/screenshots/dashboard.png)
+
+### Correlación de fingerprint
+![Fingerprint](docs/screenshots/fingerprint_view.png)
+
+### Umbrales de confianza
+![Confidence](docs/screenshots/confidence_thresholds.png)
