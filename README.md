@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/assets/logo-faro-cei.png" alt="FARO-CEI" width="6000">
+  <img src="docs/assets/logo-faro-cei.png" alt="FARO-CEI" width="600">
 </p>
 
 <h1 align="center">FARO-CEI</h1>
