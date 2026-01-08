@@ -164,4 +164,8 @@ CEI complementa estas soluciones aportando **control activo sobre la exposición
 ```bash
 git clone https://github.com/informaticaeloy/faro-cei.git
 cd faro-cei
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+python main.py
 python main.py
