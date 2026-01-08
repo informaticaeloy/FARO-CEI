@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8"><title>Baliza 9717a49a-3679-42b3-87f5-840c3f20d128</title></head>
+<body>
+<script src="/static/fingerprint/orchestrator.js"></script>
+<script type="module">
+(async () => {
+    const fpData = await window.runFingerprint();
+    await fetch("/webhook/fingerprint", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ origen: "9717a49a-3679-42b3-87f5-840c3f20d128", fingerprint: fpData, tipo: "HTML", evento: "VIEW" })
+    });
+})();
+</script>
+</body>
+</html>

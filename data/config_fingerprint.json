@@ -1,0 +1,16 @@
+{
+    "fingerprint_scoring": {
+        "checks": {
+            "visitorId": 62,
+            "platform": 8,
+            "browser": 10,
+            "timezone": 5,
+            "deviceMemory": 5,
+            "screenResolution": 10
+        },
+        "confidence_levels": {
+            "HIGH": 81,
+            "MEDIUM": 42
+        }
+    }
+}
