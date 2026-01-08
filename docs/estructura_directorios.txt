@@ -1,0 +1,60 @@
+cei-platform/
+├── app.py                      # Entry point (Flask)
+├── requirements.txt            # Dependencias
+├── README.md                   # Documentación principal
+├── LICENSE
+│
+├── data/
+│   ├── admin.csv               # Credenciales (hash)
+│   ├── eventos.csv
+│   ├── eventos_baliza.csv
+│   ├── fingerprints.json
+│   └── config_fingerprint.json
+│
+├── routes/
+│   ├── __init__.py
+│   ├── auth.py                 # Login / control acceso
+│   ├── dashboard.py            # Panel principal
+│   ├── balizas.py              # Tracking / beacons
+│   ├── fingerprint.py          # Correlación
+│   ├── configuracion.py        # Políticas
+│   └── soc.py                  # Vista SOC
+│
+├── utils/
+│   ├── __init__.py
+│   ├── auth.py                 # Hashing / password policy
+│   ├── eventos.py              # CSV eventos
+│   ├── logins.py               # Control intentos / brute-force
+│   ├── fingerprint.py          # Score engine
+│   ├── geoip.py
+│   └── utils.py
+│
+├── templates/
+│   ├── layout.html
+│   ├── layout_login.html
+│   ├── login.html
+│   ├── force_change_password.html
+│   ├── dashboard.html
+│   ├── configuracion.html
+│   └── soc.html
+│
+├── static/
+│   ├── css/
+│   ├── js/
+│   └── img/
+│       ├── logo.png
+│       └── favicon.png
+│
+├── docs/
+│   ├── architecture.md         # Flujos y diseño
+│   ├── screenshots/
+│   │   ├── login.png
+│   │   ├── dashboard.png
+│   │   ├── fingerprint.png
+│   │   └── config.png
+│   └── flows/
+│       ├── login_flow.txt
+│       ├── fingerprint_flow.txt
+│       └── data_pipeline.txt
+│
+└── .gitignore
