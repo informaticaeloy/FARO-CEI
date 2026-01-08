@@ -115,7 +115,8 @@ def force_change_password():
             if not ok:
                 error = msg
             else:
-                actualizar_password_admin(pwd1)
+                actualizar_password_admin(hash_password(pwd1))
+
 
                 # Limpieza del estado forzado
                 session.pop("force_password_change", None)
@@ -139,6 +140,7 @@ def force_change_password():
         error=error,
         success=success
     )
+
 
 
 
