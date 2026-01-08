@@ -1,0 +1,13 @@
+[ HTTP Request ]
+       |
+       v
+[ Flask Route ]
+       |
+       v
+[ Normalización ]
+       |
+       v
+[ CSV / JSON Persistencia ]
+       |
+       v
+[ Dashboard / SOC ]
