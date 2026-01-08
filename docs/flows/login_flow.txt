@@ -1,0 +1,17 @@
+[ Usuario ]
+     |
+     v
+[ Login Form ]
+     |
+     v
+[ auth.login ]
+     |
+     +--> Brute-force check
+     |
+     +--> Password hash verify
+     |
+     +--> Default credentials?
+            |
+            +--> FORCE CHANGE PASSWORD
+            |
+            +--> Dashboard
