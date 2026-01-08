@@ -1,0 +1,73 @@
+{% extends "layout.html" %}
+{% set current_page = "equipos" %}
+{% block content %}
+
+
+<div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold">Registro equipos visitadores</h1>
+</div>
+
+
+<div class="card bg-white dark:bg-gray-800 rounded-xl shadow overflow-x-auto p-4">
+    <table class="min-w-full text-left">
+        <thead>
+        <tr class="text-sm uppercase border-b dark:border-gray-700">
+            <th>&nbsp;</th>
+            <th class="py-2">> Fingerprint ID<br>> hash</th>
+<!--            <th class="py-2">Hash</th>-->
+            <th class="py-2">Última visita</th>
+            <th class="py-2">Origen</th>
+
+
+            <th>Visitas</th>
+            <th>Balizas</th>
+            <th>Última actividad</th>
+
+
+        </tr>
+        </thead>
+        <tbody class="text-sm">
+        {% for equipo in equipos %}
+          <tr>
+
+             <td class="py-2 text-center">
+
+
+                 <a href="{{ url_for('equipos.equipo_detalle', fingerprint_id=equipo.id) }}"
+                    class="px-2 py-1 bg-purple-600 text-white rounded mr-1">
+                    <i class="fa-solid fa-magnifying-glass-chart"></i>
+                </a>
+
+            </td>
+
+             <td class="py-2 text-left">> {{ equipo.id }}<br>> {{ equipo.hash }}</td>
+<!--             <td class="py-2 text-left">{{ equipo.id }}</td>-->
+<!--             <td class="py-2 text-left">{{ equipo.hash }}</td>-->
+
+             <td class="py-2 text-left">{{ equipo.timestamp }}</td>
+             <!-- <td class="py-2 text-left">{{ equipo.timestamp | fecha_es }}</td> -->
+             <td class="py-2 text-center"> {{ equipo["source"].get("origen", "-") }} </td>
+
+
+             <td>{{ equipo.total_visitas }}</td>
+             <td>
+                {% for origen, count in equipo.balizas.items() %}
+                <div class="text-xs">
+                    {{ origen[:8] }}… ({{ count }})
+                </div>
+                {% endfor %}
+             </td>
+
+             <td>
+                {{ equipo.ultima_visita | fecha_es if equipo.ultima_visita else "-" }}
+             </td>
+
+
+          </tr>
+
+        {% endfor %}
+        </tbody>
+</table>
+{% endblock %}
+
+</div>

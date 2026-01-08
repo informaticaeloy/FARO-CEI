@@ -1,0 +1,255 @@
+{% extends "layout.html" %}
+{% set current_page = "soc_behavior" %}
+{% block content %}
+
+<div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold">Fingerprint Behavior Analysis</h1>
+    <div class="text-sm">
+        Último cálculo: <span id="last-refresh" class="font-mono">{{ last_calc }}</span>
+        <button id="refresh-btn"
+                class="ml-3 px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">
+            Refrescar información
+        </button>
+    </div>
+</div>
+
+<!-- ===================== -->
+<!-- LEYENDA / DESCRIPCIÓN -->
+<!-- ===================== -->
+<div class="grid grid-cols-1 gap-6">
+
+
+    <div class="card bg-white dark:bg-gray-800 rounded-xl shadow p-4 mb-6">
+        <h2 class="text-xl font-bold mb-2">Leyenda de Fingerprint Behavior</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+            <!-- Clasificación según score -->
+            <div class="flex items-center space-x-2">
+                <span class="px-2 py-1 rounded-full bg-green-600 text-white font-semibold">LEGIT</span>
+                <span>Score < 50. Actividad normal, pocas visitas o distribuidas en el tiempo.</span>
+            </div>
+            <div class="flex items-center space-x-2">
+                <!-- VPN/Proxy Badge -->
+                <span class="px-2 py-1 rounded-full bg-blue-600 text-white font-semibold">VPN/Proxy</span>
+                <span>True si la visita proviene de un VPN o proxy conocido. Puede aumentar la sospecha.</span>
+            </div>
+            <div class="flex items-center space-x-2">
+                <span class="px-2 py-1 rounded-full bg-orange-600 text-white font-semibold">SUSPICIOUS</span>
+                <span>Score 50–79. Actividad rápida o inusual; posible automatización o prueba de bots.</span>
+            </div>
+
+            <!-- Indicadores de red -->
+            <div class="flex items-center space-x-2">
+                <!-- TOR Badge -->
+                <span class="px-2 py-1 rounded-full bg-[#6a0dad] text-white font-semibold flex items-center space-x-1">
+                <!-- Icono TOR (SVG simple) -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10 10-4.486 10-10S17.514 2 12 2zm0 18c-4.411 0-8-3.589-8-8s3.589-8 8-8 8 3.589 8 8-3.589 8-8 8z"/>
+                    <path d="M12 6a6 6 0 1 0 6 6 6.007 6.007 0 0 0-6-6zm0 10a4 4 0 1 1 4-4 4.005 4.005 0 0 1-4 4z"/>
+                </svg>
+                <span>TOR</span>
+            </span>
+                <span>True si la visita se realizó desde la red TOR. Usuarios más difíciles de rastrear.</span>
+            </div>
+
+            <div class="flex items-center space-x-2">
+                <span class="px-2 py-1 rounded-full bg-red-600 text-white font-semibold">MALICIOUS</span>
+                <span>Score ≥ 80. Actividad muy rápida y repetida; comportamiento altamente sospechoso.</span>
+            </div>
+
+
+            <!-- Otros datos resumidos -->
+            <!--        <div class="flex items-center space-x-2">-->
+            <!--            <span class="px-2 py-1 rounded-full bg-gray-400 text-black font-semibold">Score</span>-->
+            <!--            <span>Puntuación de comportamiento calculada. Más alto = más sospechoso.</span>-->
+            <!--        </div>-->
+            <div class="flex items-center space-x-2 relative">
+                <!-- Badge -->
+                <span class="px-2 py-1 rounded-full bg-gray-400 text-black font-semibold flex items-center">
+            Score
+                    <!-- Icono info -->
+            <button id="score-info-btn"
+                    class="ml-1 text-xs text-white bg-blue-600 rounded-full w-4 h-4 flex items-center justify-center hover:bg-blue-700 focus:outline-none">
+                i
+            </button>
+        </span>
+
+                <span>Puntuación de comportamiento calculada. Más alto = más sospechoso.</span>
+
+                <!-- Modal corporativo -->
+                <div id="score-info-modal"
+                     class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden z-50">
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg max-w-lg w-full p-6 relative">
+                        <!-- Cerrar modal -->
+                        <button id="score-info-close"
+                                class="absolute top-3 right-3 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 font-bold text-lg">
+                            &times;
+                        </button>
+
+                        <h3 class="text-xl font-bold mb-4">Detalle del Score</h3>
+                        <div class="text-sm text-gray-700 dark:text-gray-200 space-y-2">
+                            <p><strong>Variables que componen el Score:</strong></p>
+                            <ul class="list-disc list-inside">
+                                <li><strong>Visitas:</strong> +5 puntos por cada evento registrado.</li>
+                                <li><strong>Ventana temporal:</strong> +1 punto cada 2 minutos de actividad (intervalo
+                                    entre primer y último evento).
+                                </li>
+                                <li><strong>TOR:</strong> Si alguna visita fue desde TOR → score = 100 (máximo riesgo).
+                                </li>
+                                <li><strong>VPN:</strong> Si hay VPN y el score base ≥ 60 → +20 puntos (máx. 100).</li>
+                                <li><strong>Balizas:</strong> No afecta al score, pero se muestra como métrica de
+                                    actividad.
+                                </li>
+                            </ul>
+                            <p><strong>Clasificación final:</strong></p>
+                            <ul class="list-disc list-inside">
+                                <li>Score &lt; 50 → <span class="font-semibold text-green-600">LEGIT</span></li>
+                                <li>Score 50–79 → <span class="font-semibold text-orange-600">SUSPICIOUS</span></li>
+                                <li>Score ≥ 80 → <span class="font-semibold text-red-600">MALICIOUS</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+    const scoreBtn = document.getElementById("score-info-btn");
+    const scoreModal = document.getElementById("score-info-modal");
+    const scoreClose = document.getElementById("score-info-close");
+
+    scoreBtn.addEventListener("click", () => {
+        scoreModal.classList.remove("hidden");
+    });
+
+    scoreClose.addEventListener("click", () => {
+        scoreModal.classList.add("hidden");
+    });
+
+    // Cerrar modal al hacer click fuera del contenido
+    scoreModal.addEventListener("click", (e) => {
+        if (e.target === scoreModal) {
+            scoreModal.classList.add("hidden");
+        }
+    });
+
+            </script>
+
+
+        </div>
+    </div>
+</div>
+
+<!-- ===================== -->
+<!-- TABLA DE RESULTADOS -->
+<!-- ===================== -->
+<div class="card bg-white dark:bg-gray-800 rounded-xl shadow overflow-x-auto p-4">
+    <table class="min-w-full text-left">
+        <thead>
+        <tr class="text-sm uppercase border-b dark:border-gray-700">
+            <th>Fingerprint</th>
+            <th>TOR</th>
+            <th>VPN</th>
+            <th>Visitas</th>
+            <th>Balizas</th>
+            <th>Ventana (s)</th>
+            <th>Score</th>
+            <th>Clasificación</th>
+        </tr>
+        </thead>
+        <tbody class="text-sm">
+        {% for row in data %}
+        <tr class="border-b dark:border-gray-700">
+            <td class="py-2">
+                <a href="{{ url_for('soc.soc_fingerprint_view', fp_id=row.fingerprint) }}"
+                   class="text-blue-600 hover:underline font-mono">
+                    {{ row.fingerprint }}
+                </a>
+            </td>
+
+            <!-- TOR -->
+            <td class="py-2 font-mono {% if " YES
+            " in row.TOR %}text-red-600 font-semibold{% else %}text-green-600{% endif %}">
+            {{ row.TOR }}
+            </td>
+
+            <!-- VPN -->
+            <td class="py-2 font-mono {% if " YES
+            " in row.VPN %}text-orange-600 font-semibold{% else %}text-green-600{% endif %}">
+            {{ row.VPN }}
+            </td>
+
+            <td class="py-2">{{ row.Visitas }}</td>
+            <td class="py-2">{{ row.Balizas }}</td>
+
+            <td class="py-2 font-mono">{{ row["Ventana (s)"] }} sec. ({{ row["Ventana (s)"] | format_duration }})</td>
+            <td class="py-2 font-semibold">
+                <!-- {{ row.Score }}-->
+
+
+                <!-- ******************************************************************** -->
+                <!-- 4) Score como barra de progreso -->
+                <div class="flex flex-col items-center text-center w-full">
+
+
+                    {% set score_clamped = [0, [row.Score|int, 100]|min]|max %}
+
+                    <!-- La barra ocupa el ancho disponible de esta celda -->
+                    <div class="mt-2 w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4 overflow-hidden"
+                         role="progressbar"
+                         aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ score_clamped }}"
+                         aria-label="Score de riesgo">
+                        <div class="h-4 transition-all duration-500
+                    {% if score_clamped <= 50 %} bg-green-600
+                    {% elif score_clamped <= 80 %} bg-orange-600
+                    {% else %} bg-red-600
+                    {% endif %}"
+                             style="width: {{ score_clamped }}%;">
+                        </div>
+                    </div>
+
+                    <div class="mt-1 text-sm text-gray-800 dark:text-gray-200 font-semibold">
+                        {{ score_clamped }} / 100
+                    </div>
+
+                    <div id="score-info"
+                         class="hidden mt-2 p-2 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded text-xs text-gray-800 dark:text-gray-200 leading-relaxed text-left">
+                        <strong>Score:</strong> Combinación de:<br>
+                        - Número total de visitas (más visitas = mayor riesgo)<br>
+                        - Número de balizas impactadas<br>
+                        - Intervalo temporal de actividad (ventana en segundos)<br>
+                        - Uso de TOR (eleva score a 100)<br>
+                        - Uso de VPN (incrementa score si base &ge;= 60)<br>
+                        Clasificación: LEGIT &le;=50, SUSPICIOUS 51–80, MALICIOUS &ge;81
+                    </div>
+                </div>
+            </td>
+
+            <!-- ******************************************************************** -->
+
+
+            <td class="py-2">
+                {% if row.Clasificación == "LEGIT" %}
+                <span class="px-2 py-1 rounded-full bg-green-600 text-white text-xs font-semibold">LEGIT</span>
+                {% elif row.Clasificación == "SUSPICIOUS" %}
+                <span class="px-2 py-1 rounded-full bg-orange-600 text-white text-xs font-semibold">SUSPICIOUS</span>
+                {% elif row.Clasificación == "MALICIOUS" %}
+                <span class="px-2 py-1 rounded-full bg-red-600 text-white text-xs font-semibold">MALICIOUS</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+
+    </table>
+</div>
+
+<script>
+    document.getElementById("refresh-btn").addEventListener("click", async () => {
+        const res = await fetch("/soc/behavior/refresh", { method: "POST" });
+        const data = await res.json();
+        document.getElementById("last-refresh").innerText = data.timestamp;
+        location.reload();
+    });
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,10 @@
+4️⃣ Flujo final (ya operativo)
+
+Cuando alguien visita:
+	/balizas/view/7195b440-f305-4e4e-bb35-debb1ba74de5
+Se produce:
+1. Fingerprint completo
+2. JSON guardado en data/fingerprints/
+3. Evento vinculado a origen
+4. PNG registrado
+5. Misma baliza, misma trazabilidad

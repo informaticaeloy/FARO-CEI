@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Test Fingerprint</title>
+</head>
+<body>
+  <h1>Fingerprint Test</h1>
+  <button id="runBtn">Ejecutar Fingerprint con FingerprintJS</button>
+  <pre id="output"></pre>
+
+  <!-- Primero carga el orquestador -->
+  <script type="module" src="/static/fingerprint/orchestrator.js"></script>
+
+  <!-- Luego tu script que usa window.runFingerprint -->
+  <script type="module">
+    const btn = document.getElementById('runBtn');
+    const output = document.getElementById('output');
+
+    btn.addEventListener('click', async () => {
+      output.textContent = 'Ejecutando...';
+      try {
+        // Espera a que window.runFingerprint exista
+        if (typeof window.runFingerprint !== 'function') {
+          output.textContent = 'runFingerprint no está listo todavía';
+          return;
+        }
+
+        const result = await window.runFingerprint();
+        output.textContent = JSON.stringify(result, null, 2);
+        console.log('Fingerprint completo:', result);
+      } catch (err) {
+        output.textContent = 'Error: ' + err.toString();
+        console.error(err);
+      }
+    });
+  </script>
+</body>
+</html>
+

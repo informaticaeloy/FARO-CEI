@@ -1,0 +1,309 @@
+{% extends "layout.html" %}
+{% set current_page = "logins" %}
+
+{% block content %}
+
+<div class="p-6 space-y-6">
+    <h1 class="text-2xl font-semibold mb-4">Dashboard de Logins</h1>
+
+    <div class="flex items-center mb-4 space-x-2">
+        <input type="checkbox" id="showPasswordToggle" class="hidden"/>
+        <label for="showPasswordToggle" class="flex items-center cursor-pointer select-none">
+            <!-- Slider -->
+            <span class="relative">
+            <span class="block w-12 h-6 bg-gray-300 rounded-full shadow-inner transition-colors duration-200"
+                  id="toggleTrack"></span>
+            <span class="absolute block w-6 h-6 bg-white rounded-full shadow inset-y-0 left-0 transition-transform duration-200 ease-in-out"
+                  id="toggleKnob"></span>
+        </span>
+            <span class="ml-3 text-gray-700 dark:text-gray-200 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24"
+                 stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+            </svg>
+            Mostrar contraseñas
+        </span>
+        </label>
+    </div>
+
+
+    <!-- Tabla principal -->
+    <div class="card bg-white dark:bg-gray-800 rounded-xl shadow overflow-x-auto p-4">
+        <table class="min-w-full text-left">
+            <thead>
+            <tr class="text-sm uppercase border-b dark:border-gray-700">
+                <th class="py-2">ID</th>
+                <th class="py-2">Fecha</th>
+                <th class="py-2">Usuario</th>
+                <td class="py-2">Password</td>
+                <th class="py-2">IP</th>
+                <th class="py-2">País</th>
+                <th class="py-2">Hostname local</th>
+                <th class="py-2">IP local</th>
+                <th class="py-2">&nbsp;</th>
+                <th class="py-2">OS</th>
+                <th class="py-2">&nbsp;</th>
+                <th class="py-2">Navegador</th>
+                <th class="py-2">Resultado</th>
+            </tr>
+            </thead>
+
+
+            <tbody class="text-sm">
+            {% for login in logins %}
+            <tr class="border-b dark:border-gray-700">
+                <td class="py-2">{{ login.id_num }}</td>
+                <td class="py-2">{{ login.timestamp | fecha_es }}</td>
+
+                <td class="py-2">{{ login.usuario }}</td>
+                <!-- <td class="py-2">{{ login.password }}</td> -->
+                <!-- <td class="py-2 password-cell" data-password="{{ login.password | e }}">**********</td> -->
+                <td class="py-2 password-cell w-48" data-password="{{ login.password|e }}">**********</td>
+
+                <!-- IP -->
+                <td class="py-2">{{ login.ip }}</td>
+
+                <!-- Bandera del país -->
+                <td class="px-2 py-2">
+
+                    {% set cc = login.country_code|lower %}
+
+                    {% if cc in ["", None] %}
+                    {# === Caso sin país (por ejemplo fallo API) === #}
+                    <img src="{{ url_for('static', filename='flags/desconocido.png') }}"
+                         class="inline w-5 h-3 mr-1" alt="?"/>
+                    Desconocido
+
+                    {% elif cc == "lan" %}
+                    {# === IP privada / red interna === #}
+                    <img src="{{ url_for('static', filename='flags/lan.png') }}"
+                         class="inline w-5 h-3 mr-1" alt="LAN"/>
+                    LAN
+
+                    {% else %}
+                    {# === País normal === #}
+                    <img src="{{ url_for('static', filename='flags/' ~ cc ~ '.png') }}"
+                         class="inline w-5 h-3 mr-1" alt="{{ cc }}"/>
+                    {{ login.country }}
+                    {% endif %}
+
+                </td>
+
+                <td class="py-2">{{ login.hostname_local }}</td>
+                <td class="py-2">{{ login.ip_local }}</td>
+
+                <!-- OS Icon -->
+
+                <td>
+
+                    {% set so = (login.so or '')|lower %}
+
+                    {% if 'windows' in so or 'win' in so %}
+                    <i class="fa-brands fa-windows icon-os icon-windows" title="Windows"></i>
+
+                    {% elif 'android' in so %}
+                    <i class="fa-brands fa-android icon-os icon-android" title="Android"></i>
+
+                    {% elif 'mac' in so or 'macos' in so or 'os x' in so
+                    or 'iphone' in so or 'ios' in so or 'ipad' in so or 'ipados' in so %}
+                    <i class="fa-brands fa-apple icon-os icon-apple" title="Apple (macOS/iOS/iPadOS)"></i>
+
+                    {% elif 'cros' in so or 'chrome os' in so or 'chromebook' in so %}
+                    <i class="fa-brands fa-chrome icon-os icon-chromeos" title="ChromeOS"></i>
+
+                    {% elif 'ubuntu' in so %}
+                    <i class="fa-brands fa-ubuntu icon-os icon-ubuntu" title="Ubuntu"></i>
+                    {% elif 'red hat' in so or 'rhel' in so or 'redhat' in so %}
+                    <i class="fa-brands fa-redhat icon-os icon-redhat" title="Red Hat / RHEL"></i>
+
+                    {% elif 'debian' in so %}
+                    <i class="fa-solid fa-server icon-os icon-debian" title="Debian"></i>
+                    {% elif 'fedora' in so %}
+                    <i class="fa-solid fa-server icon-os icon-fedora" title="Fedora"></i>
+                    {% elif 'centos' in so %}
+                    <i class="fa-solid fa-server icon-os icon-centos" title="CentOS"></i>
+                    {% elif 'arch' in so %}
+                    <i class="fa-solid fa-server icon-os icon-arch" title="Arch Linux"></i>
+                    {% elif 'opensuse' in so or 'suse' in so %}
+                    <i class="fa-solid fa-server icon-os icon-opensuse" title="openSUSE/SUSE"></i>
+                    {% elif 'alpine' in so %}
+                    <i class="fa-solid fa-server icon-os icon-alpine" title="Alpine Linux"></i>
+
+                    {% elif 'linux' in so %}
+                    <i class="fa-brands fa-linux icon-os icon-linux" title="Linux"></i>
+
+                    {% elif 'freebsd' in so %}
+                    <i class="fa-solid fa-server icon-os icon-freebsd" title="FreeBSD"></i>
+                    {% elif 'openbsd' in so %}
+                    <i class="fa-solid fa-server icon-os icon-openbsd" title="OpenBSD"></i>
+                    {% elif 'netbsd' in so %}
+                    <i class="fa-solid fa-server icon-os icon-netbsd" title="NetBSD"></i>
+
+                    {% elif 'solaris' in so or 'sunos' in so %}
+                    <i class="fa-solid fa-server icon-os icon-solaris" title="Solaris/SunOS"></i>
+                    {% elif 'aix' in so %}
+                    <i class="fa-solid fa-server icon-os icon-aix" title="IBM AIX"></i>
+                    {% elif 'hp-ux' in so or 'hpux' in so %}
+                    <i class="fa-solid fa-server icon-os icon-hpux" title="HP-UX"></i>
+
+                    {% elif 'harmonyos' in so %}
+                    <i class="fa-solid fa-mobile-screen-button icon-os icon-harmonyos" title="HarmonyOS"></i>
+                    {% elif 'kaios' in so %}
+                    <i class="fa-solid fa-mobile-screen-button icon-os icon-kaios" title="KaiOS"></i>
+                    {% elif 'tizen' in so %}
+                    <i class="fa-solid fa-mobile-screen-button icon-os icon-tizen" title="Tizen"></i>
+                    {% elif 'blackberry' in so %}
+                    <i class="fa-solid fa-mobile-screen-button icon-os icon-blackberry" title="BlackBerry OS"></i>
+
+                    {% elif 'server' in so or 'srv' in so or 'vm' in so %}
+                    <i class="fa-solid fa-server icon-os icon-server" title="Servidor"></i>
+                    {% elif 'embedded' in so or 'iot' in so or 'firmware' in so %}
+                    <i class="fa-solid fa-microchip icon-os icon-iot" title="Dispositivo/IoT"></i>
+                    {% else %}
+                    <i class="fa-solid fa-desktop icon-os icon-unknown" title="SO desconocido"></i>
+                    {% endif %}
+
+                </td>
+                <td class="py-2">
+                    {{ login.so }}
+                </td>
+                <!-- Browser Icon -->
+
+                <td>
+
+                    {% set nav = (login.navegador or '')|lower %}
+
+                    {% if 'edge' in nav %}
+                    <i class="fa-brands fa-edge icon-nav icon-edge" title="Microsoft Edge"></i>
+
+                    {% elif 'chrome' in nav and 'chromium' not in nav %}
+                    <i class="fa-brands fa-chrome icon-nav icon-chrome" title="Google Chrome"></i>
+
+                    {% elif 'chromium' in nav %}
+                    <i class="fa-brands fa-chrome icon-nav icon-chromium" title="Chromium"></i>
+
+                    {% elif 'firefox' in nav %}
+                    <i class="fa-brands fa-firefox-browser icon-nav icon-firefox" title="Mozilla Firefox"></i>
+
+                    {% elif 'safari' in nav and 'mobile' not in nav %}
+                    <i class="fa-brands fa-safari icon-nav icon-safari" title="Safari"></i>
+
+                    {% elif 'mobile' in nav and 'safari' in nav %}
+                    <i class="fa-brands fa-safari icon-nav icon-safari" title="Safari (Mobile)"></i>
+
+                    {% elif 'opera gx' in nav %}
+                    <i class="fa-brands fa-opera icon-nav icon-operagx" title="Opera GX"></i>
+
+                    {% elif 'opera' in nav or 'opr' in nav %}
+                    <i class="fa-brands fa-opera icon-nav icon-opera" title="Opera"></i>
+
+                    {% elif 'brave' in nav %}
+                    <i class="fa-brands fa-brave icon-nav icon-brave" title="Brave"></i>
+
+                    {% elif 'vivaldi' in nav %}
+                    <i class="fa-brands fa-vivaldi icon-nav icon-vivaldi" title="Vivaldi"></i>
+
+                    {% elif 'tor' in nav %}
+                    <i class="fa-brands fa-tor-browser icon-nav icon-tor" title="Tor Browser"></i>
+
+                    {% elif 'internet explorer' in nav or 'msie' in nav or 'trident' in nav or 'ie' in nav %}
+                    <i class="fa-brands fa-internet-explorer icon-nav icon-ie" title="Internet Explorer"></i>
+
+                    {% elif 'yandex' in nav or 'yabrowser' in nav %}
+                    <i class="fa-brands fa-yandex-international icon-nav icon-yandex" title="Yandex Browser"></i>
+
+                    {% elif 'samsung' in nav %}
+                    <i class="fa-solid fa-globe icon-nav icon-samsung" title="Samsung Internet"></i>
+
+                    {% elif 'ucbrowser' in nav or 'uc browser' in nav %}
+                    <i class="fa-solid fa-globe icon-nav icon-uc" title="UC Browser"></i>
+
+                    {% else %}
+                    <i class="fa-solid fa-globe icon-nav icon-unknown" title="Navegador desconocido"></i>
+                    {% endif %}
+
+                </td>
+                <td class="py-2">
+                    {{ login.navegador }}
+                </td>
+
+
+                <td class="py-2">
+                    {% if login.resultado == "OK" %}
+                        <span class="badge bg-green-600 text-white px-2 py-1 rounded">OK</span>
+                    {% elif login.resultado == "FAIL" %}
+                        <span class="badge bg-red-600 text-white px-2 py-1 rounded">FAIL</span>
+                    {% elif login.resultado == "BRUTEFORCE" %}
+                        <span class="badge bg-orange-600 text-white px-2 py-1 rounded">BRUTEFORCE</span>
+                    {% else %}
+                        <span class="badge bg-gray-600 text-white px-2 py-1 rounded">OTHER</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="7" class="text-center py-4 text-gray-500">No hay registros</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Paginación -->
+    <div class="pagination mt-4 flex gap-2">
+        {% for p in paginas %}
+        {% if p == pagina %}
+        <span class="px-3 py-1 bg-blue-600 text-white rounded">{{ p }}</span>
+        {% else %}
+        <a href="{{ base_url }}&page={{ p }}"
+           class="px-3 py-1 bg-gray-300 dark:bg-gray-700 rounded">
+            {{ p }}
+        </a>
+        {% endif %}
+        {% endfor %}
+    </div>
+
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const toggle = document.getElementById("showPasswordToggle");
+    const knob = document.getElementById("toggleKnob");
+    const track = document.getElementById("toggleTrack");
+    const passwordCells = document.querySelectorAll(".password-cell");
+
+    toggle.addEventListener("change", (e) => {
+        if (toggle.checked) {
+            // Confirmación
+            const confirmar = confirm("⚠️ Estás a punto de mostrar TODAS las contraseñas en claro. ¿Deseas continuar?");
+            if (!confirmar) {
+                toggle.checked = false;
+                return;
+            }
+        }
+
+        if (toggle.checked) {
+            // Activado
+            passwordCells.forEach(cell => cell.textContent = cell.dataset.password);
+            knob.style.transform = "translateX(100%)";
+            track.classList.remove("bg-gray-300");
+            track.classList.add("bg-blue-600");
+        } else {
+            // Desactivado
+            passwordCells.forEach(cell => cell.textContent = "**********");
+            knob.style.transform = "translateX(0)";
+            track.classList.remove("bg-blue-600");
+            track.classList.add("bg-gray-300");
+        }
+    });
+});
+
+
+</script>
+
+
+{% endblock %}
+

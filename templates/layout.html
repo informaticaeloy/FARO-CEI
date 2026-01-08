@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <title>SOC Panel</title>
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Persistencia del theme -->
+    <script>
+        function applyTheme() {
+            const t = localStorage.getItem("theme") || "dark";
+            if (t === "dark") document.documentElement.classList.add("dark");
+            else document.documentElement.classList.remove("dark");
+        }
+        applyTheme();
+
+
+    </script>
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+    .flag {
+        font-family: "Segoe UI Emoji", "Noto Color Emoji", "Apple Color Emoji", sans-serif;
+    }
+
+    </style>
+
+<link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+<link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+
+</head>
+
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+
+
+<!-- SIDEBAR -->
+<div class="flex h-screen">
+
+    <aside class="w-64 bg-white dark:bg-gray-800 shadow-xl flex flex-col">
+
+<div class="px-6 py-4 border-b dark:border-gray-700
+            flex flex-col items-center justify-center text-center">
+
+<!--    <img src="static/logo.png" alt="FARO CEI" class="mb-2">-->
+
+    <img src="{{ url_for('static', filename='logo.png') }}" alt="FARO CEI" class="mb-2">
+
+    <h1 class="text-xl font-bold text-gray-800 dark:text-gray-100">
+        FARO CEI
+    </h1>
+
+    <p class="text-sm text-gray-500 dark:text-gray-400">
+        Plataforma de Control de Exposición de la Información (CEI / IEC)
+    </p>
+</div>
+
+
+        <nav class="flex-1 px-4 py-4 space-y-2">
+
+            <a href="{{ url_for('dashboard.dashboard') }}"
+               class="block px-3 py-2 rounded-lg
+                          {% if current_page=='dashboard' %} bg-blue-600 text-white 
+                          {% else %} text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 {% endif %}">
+                Dashboard
+            </a>
+
+
+            <a href="{{ url_for('dashboard.admin') }}"
+               class="block px-3 py-2 rounded-lg
+                          {% if current_page=='admin' %} bg-blue-600 text-white 
+                          {% else %} text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 {% endif %}">
+                Administración
+            </a>
+
+<!--            <a href="{{ url_for('webhook.webhook') }}"-->
+<!--               class="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700">-->
+<!--                Webhook (test)-->
+<!--            </a>-->
+
+            <!-- Tip debajo con recuadro amarillo -->
+<!--            <div class="mt-2 px-3 py-2 rounded-lg border border-yellow-400 bg-yellow-100 text-yellow-900 text-sm">-->
+<!--                <span class="font-semibold">Tip:</span>-->
+<!--                <code class="block mt-1 text-xs break-all">-->
+<!--                    http://URL:8000/webhook?e=EVENTO&amp;o=ORIGEN-->
+<!--                </code>-->
+<!--            </div>-->
+
+            <a href="{{ url_for('logins.dashboard_logins') }}"
+               class="block px-3 py-2 rounded-lg
+                {% if current_page=='logins' %} bg-blue-600 text-white
+                {% else %} text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 {% endif %}">
+                Registro de logins
+            </a>
+
+            <a href="{{ url_for('balizas.balizas') }}"
+               class="block px-3 py-2 rounded-lg
+                {% if current_page=='balizas' %} bg-blue-600 text-white
+                {% else %} text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 {% endif %}">
+                Balizas digitales <br> (ip logger)
+            </a>
+
+            <a href="{{ url_for('equipos.equipos_dashboard') }}"
+               class="block px-3 py-2 rounded-lg
+                {% if current_page in ['equipos', 'equipo_detalle'] %} bg-blue-600 text-white
+                {% else %} text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 {% endif %}">
+                Equipos clientes
+            </a>
+
+              <a href="{{ url_for('soc.soc_behavior_view') }}" class="block px-3 py-2 rounded-lg
+                {% if current_page in ['soc_behavior'] %} bg-blue-600 text-white
+                {% else %} text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 {% endif %}">
+                Fingerprint Behavior
+            </a>
+
+        </nav>
+
+
+        <!-- -------------------------------------------------------------------------------------------------------
+        # ------------------------------------------------------------------------------------ BOTONES INFERIORES
+        # ------------------------------------------------------------------------------------------------------- -->
+
+
+
+
+        <div class="p-4 border-t dark:border-gray-700 flex flex-col gap-3">
+
+            <a href="{{ url_for('configuracion.config_page') }}"
+               class="w-full px-3 py-2 text-center rounded-lg
+       {% if current_page=='configuracion' %}
+            bg-blue-600 text-white
+       {% else %}
+            text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700
+       {% endif %}">
+                Configuración
+            </a>
+
+<!--            <button onclick="toggleTheme()"-->
+<!--                    class="w-full py-2 px-4 rounded-lg-->
+<!--            bg-gray-200 dark:bg-gray-700-->
+<!--            text-gray-800 dark:text-gray-100-->
+<!--            hover:bg-gray-300 dark:hover:bg-gray-600">-->
+<!--                Cambiar tema-->
+<!--            </button>-->
+
+            <a href="{{ url_for('auth.logout') }}"
+               class="w-full py-2 px-4 text-center rounded-lg
+              bg-red-600 hover:bg-red-700 text-white">
+                Logout
+            </a>
+    </aside>
+</div>
+
+
+<!-- CONTENIDO PRINCIPAL -->
+<div class="flex-1 overflow-y-auto">
+
+    <!-- TOPBAR -->
+    <header class="w-full bg-white dark:bg-gray-800 shadow p-4 flex justify-between items-center">
+                <span class="font-semibold text-gray-900 dark:text-gray-100 text-lg">
+                    {% if current_page == "dashboard" %}Dashboard
+                    {% elif current_page == "admin" %}Administración
+                    {% else %}Panel{% endif %}
+                </span>
+
+        <span class="text-gray-500 dark:text-gray-400 text-sm">
+                    Logged in as: <strong>admin</strong>
+                </span>
+    </header>
+
+    <main class="p-6">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+</div>
+</div>
+
+
+<!-- JS Theme -->
+<script>
+        function toggleTheme() {
+            const html = document.documentElement;
+            const isDark = html.classList.contains("dark");
+            if (isDark) {
+                html.classList.remove("dark");
+                localStorage.setItem("theme", "light");
+            } else {
+                html.classList.add("dark");
+                localStorage.setItem("theme", "dark");
+            }
+        }
+
+
+</script>
+
+<!-- Script para el cálculo dinámico de los bagdes según los colores
+seleccionados en los tipos de tipos y tipos de eventos -->
+<script>
+function getContrastColor(hex) {
+    hex = hex.replace("#", "");
+
+    const r = parseInt(hex.substr(0, 2), 16);
+    const g = parseInt(hex.substr(2, 2), 16);
+    const b = parseInt(hex.substr(4, 2), 16);
+
+    // Algoritmo YIQ
+    const yiq = (r * 299 + g * 587 + b * 114) / 1000;
+
+    return yiq >= 128 ? "#000" : "#fff";
+}
+
+</script>
+
+
+</body>
+</html>

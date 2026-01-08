@@ -1,0 +1,85 @@
+1️⃣ Artefactos físicos creados al dar de alta una baliza
+
+Para un origen 7195b440-f305-4e4e-bb35-debb1ba74de5:
+
+Tipo	Ruta			Función
+======================================================
+Webhook	/webhook?e=ERROR&o=UUID	Registro directo
+PNG	/balizas/png/UUID.png	Tracking pasivo
+HTML	/balizas/view/UUID	Fingerprint + tracking
+DOCX	enlace → HTML		Wrapper
+XLSX	enlace → HTML		Wrapper
+Otros	enlace → HTML		Wrapper
+
+👉 Todos los artefactos “ricos” apuntan al HTML
+👉 PNG/webhook siguen funcionando solos, pero no fingerprintan
+
+2️⃣ Flujo real cuando alguien “visita” una baliza
+
+* Caso A — Visitante abre un HTML / DOCX / XLSX / link
+
+1. Llega a: 
+	/balizas/view/<origen>
+2. Se ejecuta:
+	runFingerprint()
+3. El fingerprint:
+	se guarda en data/fingerprints/*.json
+	devuelve fingerprint_id
+4. Se registra evento de baliza con:
+	origen
+	IP
+	UA
+	fingerprint_id
+5. Opcional:
+	carga el PNG
+	o redirige
+	o muestra contenido falso
+
+✔ Fingerprint completo
+✔ Trazabilidad total
+
+* Caso B — Solo carga un PNG (correo bloquea HTML, etc.)
+
+1. Se sirve:
+	/balizas/png/<origen>.png
+2. Se registra evento SIN fingerprint
+3. Campo:
+	fingerprint_id = null
+
+✔ Evento registrado
+✘ Sin fingerprint (limitación técnica inevitable)
+
+* Caso C — Webhook puro
+
+1. Llamada:
+	/webhook?e=...&o=...
+2. Registro de evento
+3. Sin fingerprint
+
+✔ Correcto y esperado
+
+3️⃣ Punto CLAVE: 
+
+Todos los artefactos que pueden ejecutar JS lo hacen. Los demás quedan marcados como visitas ciegas
+
+Esto es exactamente lo que hacen:
+	Google Analytics
+	sistemas de beaconing
+	red teams
+	frameworks de phishing
+
+4️⃣ Qué NO hay que hacer (importante)
+
+❌ Intentar fingerprint desde PNG
+❌ Meter JS en webhook
+❌ Forzar fingerprint en todas las rutas
+❌ Mezclar lógica en cada endpoint
+
+
+5️⃣ Conclusión ejecutiva
+
+- Un único origen
+- Múltiples artefactos
+- Un HTML central como “punto inteligente”
+- Fingerprint solo donde es técnicamente viable
+- Eventos siempre trazables

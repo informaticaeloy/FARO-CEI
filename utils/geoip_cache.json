@@ -1,0 +1,42 @@
+{
+  "127.0.0.1": {
+    "ip": "127.0.0.1",
+    "country": "LAN",
+    "country_code": "LAN",
+    "region": "LAN",
+    "city": "LAN",
+    "lat": "",
+    "lon": "",
+    "isp": "LAN"
+  },
+  "192.168.46.213": {
+    "ip": "192.168.46.213",
+    "country": "LAN",
+    "country_code": "LAN",
+    "region": "LAN",
+    "city": "LAN",
+    "lat": 0,
+    "lon": 0,
+    "isp": "LAN"
+  },
+  "192.168.248.216": {
+    "ip": "192.168.248.216",
+    "country": "LAN",
+    "country_code": "LAN",
+    "region": "LAN",
+    "city": "LAN",
+    "lat": 0,
+    "lon": 0,
+    "isp": "LAN"
+  },
+  "192.168.46.16": {
+    "ip": "192.168.46.16",
+    "country": "LAN",
+    "country_code": "LAN",
+    "region": "LAN",
+    "city": "LAN",
+    "lat": 0,
+    "lon": 0,
+    "isp": "LAN"
+  }
+}

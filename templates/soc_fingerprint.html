@@ -1,0 +1,226 @@
+{% extends "layout.html" %}
+{% set current_page = "soc_behavior" %}
+{% block content %}
+
+
+<h1 class="text-2xl font-bold mb-4">
+    Detalle Fingerprint: <span class="font-semibold text-gray-900 dark:text-gray-100 text-lg"><i class="fa-solid fa-fingerprint"></i>&nbsp;{{ fp_id }}</span>
+</h1>
+
+
+<div class="card bg-white dark:bg-gray-800 rounded-xl shadow p-4 mb-6">
+  <h2 class="text-xl font-bold mb-2 text-left">Resumen del fingerprint</h2>
+
+  <!-- Grid centrado: una fila, 7 columnas -->
+  <div class="grid grid-cols-7 gap-4 text-sm place-items-center">
+
+    <!-- 1) Total Visitas -->
+    <div class="flex flex-col items-center text-center">
+      <span class="font-semibold">Total Visitas</span>
+      <span class="inline-flex items-center justify-center gap-2 text-gray-800 dark:text-gray-200">
+        <i class="fa-solid fa-bullseye text-green-600"></i>
+        <span class="font-medium">{{ total_visitas }}</span>
+      </span>
+    </div>
+
+    <!-- 2) Balizas distintas -->
+    <div class="flex flex-col items-center text-center">
+      <span class="font-semibold">Balizas distintas</span>
+      <span class="inline-flex items-center justify-center gap-2 text-gray-800 dark:text-gray-200">
+        <i class="fa-solid fa-crosshairs text-gray-400"></i>
+        <span class="font-medium">{{ total_balizas }}</span>
+      </span>
+    </div>
+
+    <!-- 3) Ventana (s) -->
+    <div class="flex flex-col items-center text-center">
+      <span class="font-semibold">Ventana</span>
+      <span class="inline-flex items-center justify-center gap-2 text-gray-800 dark:text-gray-200">
+        <i class="fa-regular fa-clock text-gray-400"></i>
+        <span class="font-medium">{{ ventana_s }} sec.</span>
+          <span class="font-medium">({{ ventana_s | format_duration }})</span>
+      </span>
+    </div>
+
+    <!-- 4) Score como barra de progreso -->
+    <div class="flex flex-col items-center text-center w-full">
+      <span class="font-semibold flex items-center justify-center space-x-1">
+        <span>Score</span>
+        <button type="button"
+                onclick="document.getElementById('score-info').classList.toggle('hidden')"
+                class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                aria-label="Información del score">
+          <i class="fas fa-info-circle"></i>
+        </button>
+      </span>
+
+      {% set score_clamped = [0, [score, 100]|min]|max %}
+
+      <!-- La barra ocupa el ancho disponible de esta celda -->
+      <div class="mt-2 w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4 overflow-hidden"
+           role="progressbar"
+           aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ score_clamped }}"
+           aria-label="Score de riesgo">
+        <div class="h-4 transition-all duration-500
+                    {% if score_clamped <= 50 %} bg-green-600
+                    {% elif score_clamped <= 80 %} bg-orange-600
+                    {% else %} bg-red-600
+                    {% endif %}"
+             style="width: {{ score_clamped }}%;">
+        </div>
+      </div>
+
+      <div class="mt-1 text-sm text-gray-800 dark:text-gray-200 font-semibold">
+        {{ score_clamped }} / 100
+      </div>
+
+      <div id="score-info"
+           class="hidden mt-2 p-2 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded text-xs text-gray-800 dark:text-gray-200 leading-relaxed text-left">
+        <strong>Score:</strong> Combinación de:<br>
+        - Número total de visitas (más visitas = mayor riesgo)<br>
+        - Número de balizas impactadas<br>
+        - Intervalo temporal de actividad (ventana en segundos)<br>
+        - Uso de TOR (eleva score a 100)<br>
+        - Uso de VPN (incrementa score si base &ge;= 60)<br>
+        Clasificación: LEGIT &le;=50, SUSPICIOUS 51–80, MALICIOUS &ge;81
+      </div>
+    </div>
+
+    <!-- 5) Clasificación -->
+    <div class="flex flex-col items-center text-center">
+      <span class="font-semibold">Clasificación</span>
+      <span class="inline-flex w-fit self-center px-2 py-1 rounded-full
+          {% if clasificacion == 'LEGIT' %}bg-green-600{% elif clasificacion == 'SUSPICIOUS' %}bg-orange-600{% else %}bg-red-600{% endif %}
+          text-white font-semibold">
+        {{ clasificacion }}
+      </span>
+    </div>
+
+    <!-- 6) TOR -->
+    <div class="flex flex-col items-center text-center">
+      <span class="inline-flex w-fit self-center px-2 py-1 rounded-full bg-[#6a0dad] text-white font-semibold items-center space-x-1">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10 10-4.486 10-10S17.514 2 12 2zm0 18c-4.411 0-8-3.589-8-8s3.589-8 8-8 8 3.589 8 8-3.589 8-8 8z"/>
+          <path d="M12 6a6 6 0 1 0 6 6 6.007 6.007 0 0 0-6-6zm0 10a4 4 0 1 1 4-4 4.005 4.005 0 0 1-4 4z"/>
+        </svg>
+        <span>TOR</span>
+      </span>
+
+      {% set tor_visitas = events|selectattr('TOR')|list|length %}
+      {% set total = events|length %}
+      <span class="mt-1 font-semibold whitespace-nowrap
+                   {% if tor %} text-red-600 {% else %} text-green-600 {% endif %}">
+        {{ "YES" if tor else "NO" }} {{ tor_visitas }}/{{ total }}
+      </span>
+    </div>
+
+    <!-- 7) VPN -->
+    <div class="flex flex-col items-center text-center">
+      <span class="inline-flex w-fit self-center px-2 py-1 rounded-full bg-blue-600 text-white font-semibold items-center space-x-1">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M7 10h10a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2z"/>
+          <path d="M8 10V8a4 4 0 1 1 8 0v2h-2V8a2 2 0 1 0-4 0v2H8z"/>
+        </svg>
+        <span>VPN/Proxy</span>
+      </span>
+
+      {% set vpn_visitas = events|selectattr('VPN')|list|length %}
+      {% set total = events|length %}
+      <span class="mt-1 font-semibold whitespace-nowrap
+                   {% if vpn %} text-red-600 {% else %} text-green-600 {% endif %}">
+        {{ "YES" if vpn else "NO" }} {{ vpn_visitas }}/{{ total }}
+      </span>
+    </div>
+
+  </div>
+</div>
+
+
+
+<div class="card bg-white dark:bg-gray-800 rounded-xl shadow overflow-x-auto p-4 mb-6">
+    <table class="min-w-full text-left">
+        <thead>
+            <tr class="text-sm uppercase border-b dark:border-gray-700">
+                <th>Timestamp</th>
+                <th>Baliza / Origen</th>
+                <th>IP</th>
+                <th>ASN / ISP</th>
+                <th>TOR</th>
+                <th>VPN</th>
+                <th>User Agent</th>
+            </tr>
+        </thead>
+        <tbody class="text-sm">
+            {% for e in events %}
+            <tr class="border-b dark:border-gray-700">
+                <td class="py-2 font-mono">{{ e.timestamp }}</td>
+                <td class="py-2">{{ e.baliza_id or e.baliza or "UNKNOWN" }}</td>
+                <td class="py-2 font-mono">{{ e.ip or "N/A" }}</td>
+                <td class="py-2 font-mono">{{ e.asn or e.isp or "N/A" }}</td>
+                <td class="py-2">
+                    {% if e.TOR %}
+                        <span class="text-red-600 font-semibold">YES</span>
+                    {% else %}
+                        <span class="text-green-600">NO</span>
+                    {% endif %}
+                </td>
+                <td class="py-2">
+                    {% if e.VPN %}
+                        <span class="text-orange-600 font-semibold">YES</span>
+                    {% else %}
+                        <span class="text-green-600">NO</span>
+                    {% endif %}
+                </td>
+                <td class="py-2 font-mono text-xs">{{ e.user_agent or "" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+{% endblock %}
+
+
+
+<!-- Gráfico simple con Chart.js -->
+<!--<div class="card bg-white dark:bg-gray-800 rounded-xl shadow p-4 mb-6">-->
+<!--    <h2 class="text-xl font-semibold mb-2">Eventos por Hora</h2>-->
+<!--    <canvas id="timelineChart" class="w-full h-64"></canvas>-->
+<!--</div>-->
+
+<!--<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>-->
+<!--<script>-->
+<!--    const ctx = document.getElementById('timelineChart').getContext('2d');-->
+<!--    const timestamps = [{% for ev in events %}'{{ ev.timestamp.isoformat() }}',{% endfor %}];-->
+
+<!--    // Contar eventos por hora-->
+<!--    const counts = {};-->
+<!--    timestamps.forEach(ts => {-->
+<!--        const hour = ts.substring(0,13) + ':00';-->
+<!--        counts[hour] = (counts[hour] || 0) + 1;-->
+<!--    });-->
+<!--    const labels = Object.keys(counts).sort();-->
+<!--    const data = Object.values(counts);-->
+
+<!--    new Chart(ctx, {-->
+<!--        type: 'bar',-->
+<!--        data: {-->
+<!--            labels: labels,-->
+<!--            datasets: [{-->
+<!--                label: 'Eventos por hora',-->
+<!--                data: data,-->
+<!--                backgroundColor: 'rgba(59, 130, 246, 0.7)'-->
+<!--            }]-->
+<!--        },-->
+<!--        options: {-->
+<!--            responsive: true,-->
+<!--            scales: {-->
+<!--                x: { ticks: { autoSkip: true, maxTicksLimit: 20 } },-->
+<!--                y: { beginAtZero: true }-->
+<!--            }-->
+<!--        }-->
+<!--    });-->
+<!--</script>-->
+
+

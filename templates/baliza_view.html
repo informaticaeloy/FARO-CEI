@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Baliza {{ origen }}</title>
+
+    <!-- Variables de baliza -->
+    <script>
+        window.BALIZA_ID = "{{ origen }}";
+        window.BALIZA_ORIGEN = "{{ origen }}";
+        window.BALIZA_PROFILE = "baseline";
+        window.BALIZA_ORIGEN_VISITA = "{{ origen_visita }}";
+    </script>
+
+    <!-- Orquestador fingerprint -->
+    <script src="/static/fingerprint/orchestrator.js"></script>
+
+    <!-- Activador baliza -->
+    <script src="/static/js/baliza_activate_unificado.js"></script>
+</head>
+<body>
+
+
+</body>
+</html>

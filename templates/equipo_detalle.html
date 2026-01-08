@@ -1,0 +1,178 @@
+{% extends "layout.html" %}
+{% set current_page = "equipos" %}
+{% block content %}
+
+<div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold">Equipo fingerprinteado</h1>
+    <a href="{{ url_for('equipos.equipos_dashboard') }}"
+       class="px-4 py-2 bg-gray-500 text-white rounded">Volver</a>
+</div>
+
+<div class="card bg-white dark:bg-gray-800 rounded-xl shadow overflow-x-auto p-4">
+
+    <div class="grid grid-cols-2 gap-6 mt-6">
+        <div>
+            <h2 class="text-xl font-semibold mb-4">Detalle del equipo</h2>
+            <p><strong>Fingerprint ID:</strong> {{ equipo["fingerprint_id"] }}</p>
+            <p><strong>Origen:</strong> {{ equipo["source"].get("origen", "-") }}</p>
+            <p><strong>Tipo:</strong> {{ equipo["source"].get("type", "-") }}</p>
+            <p><strong>Última detección:</strong> {{ equipo["timestamp"] | fecha_es }}</p>
+        </div>
+
+        <div>
+            <h2 class="text-xl font-semibold mb-4">RAW Fingerprint</h2>
+                <button onclick="openJsonModal()"
+                    class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">
+                    <i class="fa-solid fa-fingerprint"></i> Ver JSON
+                </button>
+        </div>
+    </div>
+
+    <hr class="my-4 border-gray-500">
+
+    <h2 class="text-xl font-semibold mb-4">Timeline de visitas a balizas</h2>
+
+    <table class="min-w-full text-left">
+        <thead>
+        <tr class="text-sm uppercase border-b dark:border-gray-700">
+            <th class="py-2">Fecha</th>
+            <th>Baliza</th>
+            <th>IP</th>
+            <th>País</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for e in eventos %}
+        <tr class="border-b">
+            <td class="py-2">{{ e.timestamp | fecha_es }}</td>
+            <td>{{ e.origen }}</td>
+            <td>{{ e.ip }}</td>
+            <td>{{ e.country }}</td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="4" class="py-4 text-center text-gray-500">
+                Sin eventos registrados
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal JSON Fingerprint -->
+<div id="jsonModal"
+     class="fixed inset-0 hidden z-50 bg-black bg-opacity-70 flex items-center justify-center">
+
+  <div class="bg-gray-900 w-11/12 max-w-5xl h-[70vh] rounded-xl shadow-lg flex flex-col">
+
+    <!-- Header -->
+    <div class="flex justify-between items-center px-4 py-2 border-b border-gray-700">
+      <h3 class="text-white font-semibold">Fingerprint completo</h3>
+      <button onclick="closeJsonModal()"
+              class="text-gray-300 hover:text-red-400 text-xl">&times;</button>
+    </div>
+
+    <!-- Controls -->
+    <div class="px-4 py-2 flex gap-2 border-b border-gray-700">
+      <button onclick="expandAll()"
+              class="px-3 py-1 bg-blue-600 text-white rounded text-sm">
+        Expandir todo
+      </button>
+      <button onclick="collapseAll()"
+              class="px-3 py-1 bg-blue-600 text-white rounded text-sm">
+        Colapsar todo
+      </button>
+    </div>
+
+    <!-- JSON Container -->
+    <div id="jsonContainer"
+         class="flex-1 overflow-auto p-4 font-mono text-xs bg-black text-gray-200">
+    </div>
+
+  </div>
+</div>
+
+
+
+
+<!-- TU SCRIPT (DESPUÉS) -->
+<script>
+const jsonData = {{ equipo | tojson | safe }};
+let nodeRegistry = [];
+
+function openJsonModal() {
+  document.getElementById("jsonModal").classList.remove("hidden");
+  renderJson();
+}
+
+function closeJsonModal() {
+  document.getElementById("jsonModal").classList.add("hidden");
+}
+
+function renderJson() {
+  nodeRegistry = [];
+  const container = document.getElementById("jsonContainer");
+  container.innerHTML = "";
+  container.appendChild(renderNode(jsonData));
+}
+
+function renderNode(obj, level = 0) {
+  const wrapper = document.createElement("div");
+
+  for (const key in obj) {
+    const row = document.createElement("div");
+    row.style.marginLeft = (level * 16) + "px";
+
+    if (typeof obj[key] === "object" && obj[key] !== null) {
+      const id = Math.random().toString(36).slice(2);
+
+      const toggle = document.createElement("span");
+      toggle.textContent = "▶ ";
+      toggle.className = "cursor-pointer text-blue-400";
+      toggle.onclick = () => toggleBlock(id);
+
+      const label = document.createElement("span");
+      label.textContent = key;
+      label.className = "text-yellow-300";
+
+      const block = document.createElement("div");
+      block.id = id;
+      block.style.display = "none";
+      block.appendChild(renderNode(obj[key], level + 1));
+
+      nodeRegistry.push(block);
+
+      row.appendChild(toggle);
+      row.appendChild(label);
+      wrapper.appendChild(row);
+      wrapper.appendChild(block);
+
+    } else {
+      row.innerHTML =
+        `<span class="text-yellow-300">${key}</span>:
+         <span class="text-green-400">${obj[key]}</span>`;
+      wrapper.appendChild(row);
+    }
+  }
+
+  return wrapper;
+}
+
+function toggleBlock(id) {
+  const el = document.getElementById(id);
+  el.style.display = el.style.display === "none" ? "block" : "none";
+}
+
+function expandAll() {
+  nodeRegistry.forEach(n => n.style.display = "block");
+}
+
+function collapseAll() {
+  nodeRegistry.forEach(n => n.style.display = "none");
+}
+</script>
+
+
+
+{% endblock %}

@@ -1,0 +1,306 @@
+<!-- BALIZAS - LISTADO + CREAR -->
+{% extends "layout.html" %}
+{% set current_page = "balizas" %}
+
+{% block content %}
+
+<div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold">Balizas digitales</h1>
+
+    <a href="{{ url_for('balizas.baliza_nueva') }}"
+       class="px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700">
+        + Crear nueva baliza
+    </a>
+</div>
+
+<div class="card bg-white dark:bg-gray-800 rounded-xl shadow overflow-x-auto p-4">
+    <table class="min-w-full text-left">
+        <thead>
+        <tr class="text-sm uppercase border-b dark:border-gray-700">
+            <th class="py-2">&nbsp;</th>
+            <th class="py-2">ID</th>
+            <th class="py-2">Timestamp</th>
+            <th class="py-2">Comentario</th>
+            <th class="py-2">Tipo</th>
+            <th class="py-2">Evento</th>
+            <th class="py-2">Origen</th>
+            <th class="py-2">Link</th>
+            <th class="py-2">Acciones</th>
+        </tr>
+        </thead>
+        <tbody class="text-sm">
+
+        {% for b in balizas %}
+        <!-- <tr class="border-b dark:border-gray-700"> -->
+        <tr class="border-b dark:border-gray-700"
+                data-baliza-origen="{{ b.origen }}"
+                data-baliza-id="{{ b.id }}">
+            <td class="py-2 text-center">
+                {% if b.visitada %}
+                    <span class="inline-flex items-center gap-1 text-green-600 font-semibold">
+                    <i class="fa-solid fa-bullseye"></i>
+                        {{ b.visitas }}
+                    </span>
+                {% else %}
+                    <span class="inline-flex items-center gap-1 text-gray-400">
+                    <i class="fa-solid fa-crosshairs"></i>
+                        0
+                    </span>
+                {% endif %}
+            </td>
+
+            <td class="py-2">{{ b.id }}</td>
+            <td class="py-2">{{ b.timestamp | fecha_es }}</td>
+            <td class="py-2">{{ b.comentario }}</td>
+
+            <!--
+            <td class="py-2">
+                <span class="badge badge-info">{{ b.tipo }}</span>
+            </td>
+            <td class="py-2">
+                <span class="badge badge-event">{{ b.evento }}</span>
+            </td>
+            -->
+            <td class="py-2">
+                {% set color = tipos_dict.get(b.tipo, "#999") %}
+                <span class="badge" style="background-color: {{ color }}; color: {{ calcular_texto(color) }};"> <!-- contrast_color -->
+                    {{ b.tipo }}
+                </span>
+            </td>
+            <td class="py-2">
+                {% set color = eventos_dict.get(b.evento, "#999") %}
+                <span class="badge" style="background-color: {{ color }}; color: {{ calcular_texto(color) }};">
+                        {{ b.evento }}
+                    </span>
+            </td>
+            <!-- <td class="py-2">{{ b.origen }}</td> -->
+            <td class="py-2">
+                {{ b.origen[:6] }}....{{ b.origen[-6:] }}
+            </td>
+            <!--
+                        <td class="py-2">
+                            <div class="flex gap-2 items-center">
+                                <input class="w-80 px-2 py-1 text-sm bg-gray-200 dark:bg-gray-700 rounded"
+                                       id="url_{{ b.id }}"
+                                       value="http://<SERVER_IP>:8000/webhook?e={{ b.evento }}&o={{ b.origen }}"
+                                       readonly>
+
+                                <button onclick="copiar('{{ b.id }}')"
+                                        class="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600" title="Copiar">
+                                    <i class="fa-solid fa-copy"></i>
+                                </button>
+                            </div>
+                        </td>
+            -->
+
+
+            <td class="py-2">
+                <div class="flex gap-2 items-center" style="position: relative;">
+                    <!--    <input-->
+                    <!--      class="w-80 px-2 py-1 text-sm bg-gray-200 dark:bg-gray-700 rounded"-->
+                    <!--      id="url_{{ b.id }}"-->
+                    <!--      value="http://<SERVER_IP>:8000/webhook?e={{ b.evento }}&o={{ b.origen }}"-->
+                    <!--      readonly-->
+                    <!--    >-->
+                    <input
+                            class="w-80 px-2 py-1 text-sm bg-gray-200 dark:bg-gray-700 rounded"
+                            id="url_{{ b.id }}"
+                            value="{{ b.servidor_url }}/webhook?e={{ b.evento }}&o={{ b.origen }}" readonly>
+
+                    <button
+                            onclick="copiar('{{ b.id }}', this)"
+                            class="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+                            title="Copiar">
+                        <i class="fa-solid fa-copy"></i>
+                    </button>
+
+                    <!-- PNG -->
+                    <a href="{{ url_for('balizas.baliza_files', filename=b.origen + '.png') }}"
+                       class="px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+                       title="Descargar PNG">
+                        <i class="fa-solid fa-file-image"></i>
+                    </a>
+
+                    <!-- HTML -->
+                    <a href="{{ url_for('balizas.baliza_files', filename=b.origen + '.html') }}"
+                       class="px-2 py-1 bg-orange-600 text-white rounded hover:bg-orange-700"
+                       title="Descargar HTML">
+                        <i class="fa-brands fa-html5"></i>
+                    </a>
+
+                    <!-- Word -->
+                    <a href="{{ url_for('balizas.baliza_files', filename=b.origen + '.docx') }}"
+                       class="px-2 py-1 bg-blue-800 text-white rounded hover:bg-blue-900"
+                       title="Descargar Word">
+                        <i class="fa-solid fa-file-word"></i>
+                    </a>
+
+                    <!-- Excel -->
+                    <a href="{{ url_for('balizas.baliza_files', filename=b.origen + '.xlsx') }}"
+                       class="px-2 py-1 bg-green-600 text-white rounded hover:bg-green-700"
+                       title="Descargar Excel">
+                        <i class="fa-solid fa-file-excel"></i>
+                    </a>
+
+                    <!-- PDF -->
+                    <a href="{{ url_for('balizas.baliza_files', filename=b.origen + '.pdf') }}"
+                       class="px-2 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+                       title="Descargar PDF">
+                        <i class="fa-solid fa-file-pdf"></i>
+                    </a>
+
+
+                </div>
+
+
+
+
+                <!-- BOTONES DE ACCION DE CADA BALIZA -->
+            <td class="py-2">
+                <!-- EDITAR -->
+                <a class="px-2 py-1 bg-green-600 text-white rounded mr-1"
+                   href="{{ url_for('balizas.balizas_editar', baliza_id=b.id) }}"><i class="fas fa-edit"></i></a>
+
+                <!-- STATS -->
+                <a class="px-2 py-1 bg-purple-600 text-white rounded mr-1"
+                   href="{{ url_for('balizas.baliza_stats', baliza_id=b.id) }}"><i class="fa-solid fa-chart-line"></i></a>
+
+                <!-- ELIMINAR (POST seguro) -->
+                <form action="{{ url_for('balizas.baliza_eliminar', baliza_id=b.id) }}" method="post" style="display:inline"
+                      onsubmit="return confirm('¿Eliminar baliza?');">
+                    <button type="submit" class="px-2 py-1 bg-red-600 text-white rounded">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </form>
+            </td>
+
+
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+
+<script>
+/**
+ * Copia el texto del input url_{id} y muestra un popup "Copiado" encima del botón.
+ * Funciona con navigator.clipboard (HTTPS/localhost) y con fallback execCommand en HTTP.
+ */
+async function copiar(id, btnEl) {
+  const input = document.getElementById('url_' + id);
+  if (!input) {
+    console.error('No se encontró el input con id url_' + id);
+    return mostrarPopup(btnEl, 'Error', 1500);
+  }
+
+  const texto = input.value;
+
+  // Intento moderno: requiere contexto seguro (HTTPS o localhost)
+  try {
+    await navigator.clipboard.writeText(texto);
+    return mostrarPopup(btnEl, 'Copiado', 1500);
+  } catch (e) {
+    // Fallback para contextos sin HTTPS o permisos denegados
+    try {
+      const readonlyPrevio = input.hasAttribute('readonly');
+      if (readonlyPrevio) input.removeAttribute('readonly');
+
+      input.focus();
+      input.select();
+      input.setSelectionRange(0, texto.length);
+
+      const ok = document.execCommand && document.execCommand('copy');
+
+      if (readonlyPrevio) input.setAttribute('readonly', 'readonly');
+
+      if (ok) {
+        return mostrarPopup(btnEl, 'Copiado', 1500);
+      } else {
+        console.warn('execCommand("copy") devolvió false');
+        return mostrarPopup(btnEl, 'Error', 1500);
+      }
+    } catch (e2) {
+      console.error('No se pudo copiar:', e, e2);
+      return mostrarPopup(btnEl, 'Error', 1500);
+    }
+  }
+}
+
+/**
+ * Crea y muestra un popup simple sobre el botón, sin CSS externo.
+ * Se elimina automáticamente tras `duracionMs`.
+ */
+function mostrarPopup(referenceEl, texto, duracionMs) {
+  const parent = referenceEl.closest('div') || referenceEl.parentElement;
+
+  // Crear el popup si no existe
+  let tip = parent.querySelector('.__popup_copiado');
+  if (!tip) {
+    tip = document.createElement('div');
+    tip.className = '__popup_copiado';
+    tip.style.position = 'absolute';
+    tip.style.background = '#111827';
+    tip.style.color = '#fff';
+    tip.style.padding = '6px 10px';
+    tip.style.borderRadius = '6px';
+    tip.style.fontSize = '12px';
+    tip.style.whiteSpace = 'nowrap';
+    tip.style.boxShadow = '0 2px 8px rgba(0,0,0,0.2)';
+    tip.style.zIndex = '1000';
+    tip.style.opacity = '0';
+    tip.style.transition = 'opacity .15s ease, transform .15s ease';
+    tip.style.pointerEvents = 'none';
+
+    // Flechita simple con ::after emulado mediante otro elemento
+    const arrow = document.createElement('div');
+    arrow.style.position = 'absolute';
+    arrow.style.top = '100%';
+    arrow.style.left = '50%';
+    arrow.style.transform = 'translateX(-50%)';
+    arrow.style.width = '0';
+    arrow.style.height = '0';
+    arrow.style.borderLeft = '6px solid transparent';
+    arrow.style.borderRight = '6px solid transparent';
+    arrow.style.borderTop = '6px solid #111827';
+    tip.appendChild(arrow);
+
+    parent.appendChild(tip);
+  }
+
+  tip.textContent = texto;
+
+  // Medir y posicionar justo encima del botón, centrado
+  const btnRect = referenceEl.getBoundingClientRect();
+  const parentRect = parent.getBoundingClientRect();
+
+  // Calcular posición relativa al parent
+  const top = btnRect.top - parentRect.top;    // posición del botón dentro del parent
+  const left = btnRect.left - parentRect.left;
+
+  // Colocar el tooltip: centrado horizontal sobre el botón
+  tip.style.left = (left + btnRect.width / 2) + 'px';
+  tip.style.bottom = (parentRect.height - top + 8) + 'px'; // 8px separación
+  tip.style.transform = 'translateX(-50%) translateY(0)';
+
+  // Mostrar con animación suave
+  requestAnimationFrame(() => {
+    tip.style.opacity = '1';
+    tip.style.transform = 'translateX(-50%) translateY(-4px)';
+  });
+
+  // Ocultar después de duracionMs
+  clearTimeout(tip._hideTimer);
+  tip._hideTimer = setTimeout(() => {
+    tip.style.opacity = '0';
+    tip.style.transform = 'translateX(-50%) translateY(0)';
+   }, duracionMs || 1500);
+}
+
+</script>
+
+
+
+
+{% endblock %}

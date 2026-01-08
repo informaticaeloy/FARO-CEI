@@ -1,0 +1,8 @@
+Columna	Qué significa
+Fingerprint	Identificador único de dispositivo/usuario (fingerprint_id). Cada fila representa un fingerprint distinto.
+TOR	Booleano. True si ese fingerprint se ha detectado usando TOR; False en tu CSV actual siempre es False.
+Visitas	Número total de eventos asociados a ese fingerprint.
+Balizas	Número de balizas distintas que ha “tocado” ese fingerprint. En tu CSV, se cuenta por la columna origen.
+Ventana (s)	Diferencia en segundos entre el primer y último evento del fingerprint. Mide actividad en el tiempo.
+Score	Puntuación de comportamiento calculada por fingerprint_behavior.py. Más alto = más sospechoso.
+Clasificación	Resultado final según score (ej. LEGIT, SUSPICIOUS, MALICIOUS). Reglas definidas en el script.

@@ -1,0 +1,338 @@
+{% extends "layout.html" %}
+{% set current_page = "admin" %}
+
+{% block content %}
+
+
+<div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold">Administración de eventos</h1>
+</div>
+
+<!-- Filtros -->
+<div class="card mb-6 p-4 bg-white dark:bg-gray-800 rounded-xl shadow">
+    <h2 class="text-xl font-semibold mb-4">Filtros</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div>
+            <label class="font-medium">IP</label>
+            <select id="f_ip" onchange="applyFilters()"
+                    class="w-full p-2 rounded border dark:bg-gray-700">
+                <option value="all">Todas</option>
+                {% for ip in ips %}
+                <option value="{{ ip }}" {% if f_ip== ip %}selected{% endif %}>
+                    {{ ip }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label class="font-medium">Evento</label>
+            <select id="f_evento" onchange="applyFilters()"
+                    class="w-full p-2 rounded border dark:bg-gray-700">
+                <option value="all">Todos</option>
+                {% for ev in eventos %}
+                <option value="{{ ev }}" {% if f_evento== ev %}selected{% endif %}>
+                    {{ ev }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label class="font-medium">Origen</label>
+            <select id="f_origen" onchange="applyFilters()"
+                    class="w-full p-2 rounded border dark:bg-gray-700">
+                <option value="all">Todos</option>
+                {% for o in origenes %}
+                <option value="{{ o }}" {% if f_origen== o %}selected{% endif %}>
+                    {{ o }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="flex items-end">
+            <button class="px-4 py-2 bg-red-600 text-white rounded shadow-lg"
+                    onclick="borrarEventos()">
+                Borrar todo
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Tabla -->
+<div class="card bg-white dark:bg-gray-800 rounded-xl shadow overflow-x-auto p-4">
+    <table class="min-w-full text-left">
+        <thead>
+        <tr class="text-sm uppercase border-b dark:border-gray-700">
+            <th class="py-2">ID</th>
+            <th class="py-2">Timestamp</th>
+            <th class="py-2">IP</th>
+            <th class="py-2">País</th>
+            <th class="py-2">Tipo</th>
+            <th class="py-2">Evento</th>
+            <th class="py-2">Origen</th>
+            <th class="py-2">Payload</th>
+            <th class="py-2">Hostname local</th>
+            <th class="py-2">IP local</th>
+            <th class="py-2">&nbsp</th>
+            <th class="py-2">SO</th>
+            <th class="py-2">&nbsp</th>
+            <th class="py-2">Navegador</th>
+            <th class="py-2">Acciones</th>
+        </tr>
+        </thead>
+
+        <tbody class="text-sm">
+        {% for e in eventos_pagina %}
+        <tr class="border-b dark:border-gray-700">
+            <td class="py-2">{{ e.id_num }}</td>
+            <!--
+            <td class="py-2">{{ e.timestamp }}</td>
+            -->
+            <td class="py-2">{{ e.timestamp | fecha_es }}</td>
+            <td class="py-2">{{ e.ip }}</td>
+
+            <!-- Bandera del país -->
+            <td class="px-2 py-2">
+
+                {% set cc = e.country_code|lower %}
+
+                {% if cc in ["", None] %}
+                {# === Caso sin país (por ejemplo fallo API) === #}
+                <img src="{{ url_for('static', filename='flags/desconocido.png') }}"
+                     class="inline w-5 h-3 mr-1" alt="?"/>
+                Desconocido
+
+                {% elif cc == "lan" %}
+                {# === IP privada / red interna === #}
+                <img src="{{ url_for('static', filename='flags/lan.png') }}"
+                     class="inline w-5 h-3 mr-1" alt="LAN"/>
+                LAN
+
+                {% elif cc == "localhost" %}
+                {# === IP Localhost === #}
+                <img src="{{ url_for('static', filename='flags/localhost.png') }}"
+                     class="inline w-5 h-3 mr-1" alt="localhost"/>
+                Localhost
+
+                {% else %}
+                {# === País normal === #}
+                <img src="{{ url_for('static', filename='flags/' ~ cc ~ '.png') }}"
+                     class="inline w-5 h-3 mr-1" alt="{{ cc }}"/>
+                {{ e.country }}
+                {% endif %}
+
+            </td>
+
+
+            <!-- BADGES -->
+            <td class="py-2">
+                {% if e.tipo in ("ERROR","FALLO","ALERTA") %}
+                <span class="badge badge-danger">{{ e.tipo }}</span>
+                {% elif e.tipo in ("WARN","AVISO") %}
+                <span class="badge badge-warn">{{ e.tipo }}</span>
+                {% elif e.tipo in ("INFO","CHECK","OK") %}
+                <span class="badge badge-info">{{ e.tipo }}</span>
+                {% else %}
+                <span class="badge badge-event">{{ e.tipo }}</span>
+                {% endif %}
+            </td>
+
+            <td class="py-2">{{ e.evento }}</td>
+            <td class="py-2">{{ e.origen }}</td>
+
+            <td class="py-2">
+                <pre class="whitespace-pre-wrap max-h-40 overflow-auto">{{ e.payload }}</pre>
+            </td>
+
+            <td class="py-2">{{ e.hostname_local }}</td>
+            <td class="py-2">{{ e.ip_local }}</td>
+            <td>
+
+                {% set so = (e.so or '')|lower %}
+
+                {% if 'windows' in so or 'win' in so %}
+                <i class="fa-brands fa-windows icon-os icon-windows" title="Windows"></i>
+
+                {% elif 'android' in so %}
+                <i class="fa-brands fa-android icon-os icon-android" title="Android"></i>
+
+                {% elif 'mac' in so or 'macos' in so or 'os x' in so
+                or 'iphone' in so or 'ios' in so or 'ipad' in so or 'ipados' in so %}
+                <i class="fa-brands fa-apple icon-os icon-apple" title="Apple (macOS/iOS/iPadOS)"></i>
+
+                {% elif 'cros' in so or 'chrome os' in so or 'chromebook' in so %}
+                <i class="fa-brands fa-chrome icon-os icon-chromeos" title="ChromeOS"></i>
+
+                {% elif 'ubuntu' in so %}
+                <i class="fa-brands fa-ubuntu icon-os icon-ubuntu" title="Ubuntu"></i>
+                {% elif 'red hat' in so or 'rhel' in so or 'redhat' in so %}
+                <i class="fa-brands fa-redhat icon-os icon-redhat" title="Red Hat / RHEL"></i>
+
+                {% elif 'debian' in so %}
+                <i class="fa-solid fa-server icon-os icon-debian" title="Debian"></i>
+                {% elif 'fedora' in so %}
+                <i class="fa-solid fa-server icon-os icon-fedora" title="Fedora"></i>
+                {% elif 'centos' in so %}
+                <i class="fa-solid fa-server icon-os icon-centos" title="CentOS"></i>
+                {% elif 'arch' in so %}
+                <i class="fa-solid fa-server icon-os icon-arch" title="Arch Linux"></i>
+                {% elif 'opensuse' in so or 'suse' in so %}
+                <i class="fa-solid fa-server icon-os icon-opensuse" title="openSUSE/SUSE"></i>
+                {% elif 'alpine' in so %}
+                <i class="fa-solid fa-server icon-os icon-alpine" title="Alpine Linux"></i>
+
+                {% elif 'linux' in so %}
+                <i class="fa-brands fa-linux icon-os icon-linux" title="Linux"></i>
+
+                {% elif 'freebsd' in so %}
+                <i class="fa-solid fa-server icon-os icon-freebsd" title="FreeBSD"></i>
+                {% elif 'openbsd' in so %}
+                <i class="fa-solid fa-server icon-os icon-openbsd" title="OpenBSD"></i>
+                {% elif 'netbsd' in so %}
+                <i class="fa-solid fa-server icon-os icon-netbsd" title="NetBSD"></i>
+
+                {% elif 'solaris' in so or 'sunos' in so %}
+                <i class="fa-solid fa-server icon-os icon-solaris" title="Solaris/SunOS"></i>
+                {% elif 'aix' in so %}
+                <i class="fa-solid fa-server icon-os icon-aix" title="IBM AIX"></i>
+                {% elif 'hp-ux' in so or 'hpux' in so %}
+                <i class="fa-solid fa-server icon-os icon-hpux" title="HP-UX"></i>
+
+                {% elif 'harmonyos' in so %}
+                <i class="fa-solid fa-mobile-screen-button icon-os icon-harmonyos" title="HarmonyOS"></i>
+                {% elif 'kaios' in so %}
+                <i class="fa-solid fa-mobile-screen-button icon-os icon-kaios" title="KaiOS"></i>
+                {% elif 'tizen' in so %}
+                <i class="fa-solid fa-mobile-screen-button icon-os icon-tizen" title="Tizen"></i>
+                {% elif 'blackberry' in so %}
+                <i class="fa-solid fa-mobile-screen-button icon-os icon-blackberry" title="BlackBerry OS"></i>
+
+                {% elif 'server' in so or 'srv' in so or 'vm' in so %}
+                <i class="fa-solid fa-server icon-os icon-server" title="Servidor"></i>
+                {% elif 'embedded' in so or 'iot' in so or 'firmware' in so %}
+                <i class="fa-solid fa-microchip icon-os icon-iot" title="Dispositivo/IoT"></i>
+                {% else %}
+                <i class="fa-solid fa-desktop icon-os icon-unknown" title="SO desconocido"></i>
+                {% endif %}
+
+            </td>
+            <td class="py-2">
+                {{ e.so }}
+            </td>
+
+
+            <!-- <td class="py-2">{{ e.navegador }}</td> -->
+
+            <td>
+
+                {% set nav = (e.navegador or '')|lower %}
+
+                {% if 'edge' in nav %}
+                <i class="fa-brands fa-edge icon-nav icon-edge" title="Microsoft Edge"></i>
+
+                {% elif 'chrome' in nav and 'chromium' not in nav %}
+                <i class="fa-brands fa-chrome icon-nav icon-chrome" title="Google Chrome"></i>
+
+                {% elif 'chromium' in nav %}
+                <i class="fa-brands fa-chrome icon-nav icon-chromium" title="Chromium"></i>
+
+                {% elif 'firefox' in nav %}
+                <i class="fa-brands fa-firefox-browser icon-nav icon-firefox" title="Mozilla Firefox"></i>
+
+                {% elif 'safari' in nav and 'mobile' not in nav %}
+                <i class="fa-brands fa-safari icon-nav icon-safari" title="Safari"></i>
+
+                {% elif 'mobile' in nav and 'safari' in nav %}
+                <i class="fa-brands fa-safari icon-nav icon-safari" title="Safari (Mobile)"></i>
+
+                {% elif 'opera gx' in nav %}
+                <i class="fa-brands fa-opera icon-nav icon-operagx" title="Opera GX"></i>
+
+                {% elif 'opera' in nav or 'opr' in nav %}
+                <i class="fa-brands fa-opera icon-nav icon-opera" title="Opera"></i>
+
+                {% elif 'brave' in nav %}
+                <i class="fa-brands fa-brave icon-nav icon-brave" title="Brave"></i>
+
+                {% elif 'vivaldi' in nav %}
+                <i class="fa-brands fa-vivaldi icon-nav icon-vivaldi" title="Vivaldi"></i>
+
+                {% elif 'tor' in nav %}
+                <i class="fa-brands fa-tor-browser icon-nav icon-tor" title="Tor Browser"></i>
+
+                {% elif 'internet explorer' in nav or 'msie' in nav or 'trident' in nav or 'ie' in nav %}
+                <i class="fa-brands fa-internet-explorer icon-nav icon-ie" title="Internet Explorer"></i>
+
+                {% elif 'yandex' in nav or 'yabrowser' in nav %}
+                <i class="fa-brands fa-yandex-international icon-nav icon-yandex" title="Yandex Browser"></i>
+
+                {% elif 'samsung' in nav %}
+                <i class="fa-solid fa-globe icon-nav icon-samsung" title="Samsung Internet"></i>
+
+                {% elif 'ucbrowser' in nav or 'uc browser' in nav %}
+                <i class="fa-solid fa-globe icon-nav icon-uc" title="UC Browser"></i>
+
+                {% else %}
+                <i class="fa-solid fa-globe icon-nav icon-unknown" title="Navegador desconocido"></i>
+                {% endif %}
+
+            </td>
+            <td class="py-2">
+                {{ e.navegador }}
+            </td>
+
+
+            <!-- BOTÓN BORRAR POR FILA -->
+            <td class="py-2 text-center">
+                <form action="{{ url_for('dashboard.delete_event', id_num=e.id_num) }}" method="post">
+                    <button class="px-3 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-700">
+                        Eliminar
+                    </button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- PAGINACIÓN -->
+    <div class="pagination mt-4 flex gap-2">
+        {% for p in paginas %}
+        {% if p == pagina %}
+        <span class="px-3 py-1 bg-blue-600 text-white rounded">{{ p }}</span>
+        {% else %}
+        <a href="{{ base_url }}&page={{ p }}"
+           class="px-3 py-1 bg-gray-300 dark:bg-gray-700 rounded">
+            {{ p }}
+        </a>
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+function applyFilters() {
+    const ip = document.getElementById("f_ip").value;
+    const evento = document.getElementById("f_evento").value;
+    const origen = document.getElementById("f_origen").value;
+
+    const q = `?ip=${ip}&evento=${evento}&origen=${origen}`;
+    window.location.href = "/admin" + q;
+}
+
+function borrarEventos() {
+    if (confirm("¿Seguro que deseas borrar TODOS los eventos?")) {
+        window.location.href = "/admin/delete_all";
+    }
+}
+
+
+
+
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h1 class="text-2xl font-bold mb-4">Network Correlation</h1>
+<p class="font-mono mb-4">{{ fingerprint }}</p>
+
+<table class="min-w-full text-sm">
+    <thead>
+        <tr class="border-b">
+            <th>IP</th>
+            <th>Scope</th>
+            <th>ASN</th>
+            <th>Organización</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for ip in ips %}
+        <tr class="border-b">
+            <td class="font-mono">{{ ip.ip }}</td>
+            <td>{{ ip.scope }}</td>
+            <td>{{ ip.asn }}</td>
+            <td>{{ ip.org }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

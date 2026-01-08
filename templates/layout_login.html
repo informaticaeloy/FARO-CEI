@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login FARO CEI</title>
+
+    <!-- TailwindCSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Estilos opcionales -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="h-full m-0 p-0 bg-gray-100 dark:bg-gray-900 font-sans flex items-center justify-center">
+
+    <!-- Card centrado -->
+    <div class="max-w-sm p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-lg">
+        {% block content %}{% endblock %}
+    </div>
+
+</body>
+</html>
+
