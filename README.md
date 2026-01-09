@@ -187,7 +187,7 @@ source venv/bin/activate   # Windows: venv\Scripts\activate
 ## Licencia
 
 Este proyecto se distribuye bajo **MPL 2.0 con Términos Adicionales de Uso No Comercial (MPL‑2.0‑NC)**.  
-Consulta el archivo [`LICENSE`](./LICENSE) para el texto completo.
+Consulta el archivo [`LICENSE`](./LICENSE.md) para el texto completo.
 
 - ✅ Se permite el uso, modificación y distribución **solo para fines no comerciales**.  
 - 🛑 **Uso comercial prohibido** sin permiso expreso por escrito del titular.  
