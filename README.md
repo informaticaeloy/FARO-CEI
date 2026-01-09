@@ -12,7 +12,7 @@
 <p align="center">
   <a href="#"><img alt="CI" src="https://img.shields.io/badge/GitHub_Actions-CI-blue"></a>
   <a href="#"><img alt="Stars" src="https://img.shields.io/github/stars/informaticaeloy/faro-cei"></a>
-  <a href="#"><img alt="License" src="https://img.shields.io/github/license/informaticaeloy/faro-cei"></a>
+  <img alt="License" src="https://img.shields.io/badge/License-MPL--2.0--NC-blue">
   <a href="#"><img alt="Python" src="https://img.shields.io/badge/Python-3.10+-blue"></a>
   <a href="#"><img alt="Status" src="https://img.shields.io/badge/Status-Active-success"></a>
 </p>
@@ -181,5 +181,19 @@ git clone https://github.com/informaticaeloy/faro-cei.git
 cd faro-cei
 python -m venv venv
 source venv/bin/activate   # Windows: venv\Scripts\activate
+```
+
+
+## Licencia
+
+Este proyecto se distribuye bajo **MPL 2.0 con Términos Adicionales de Uso No Comercial (MPL‑2.0‑NC)**.  
+Consulta el archivo [`LICENSE`](./LICENSE) para el texto completo.
+
+- ✅ Se permite el uso, modificación y distribución **solo para fines no comerciales**.  
+- 🛑 **Uso comercial prohibido** sin permiso expreso por escrito del titular.  
+- ℹ️ GitHub puede mostrar “MPL‑2.0” en el badge automático; sin embargo, este repositorio incluye **términos adicionales NC** que **prevalecen** según la Sección 1.7 de la MPL 2.0.
+
+Para licencias comerciales, contacta con: **(tu email/empresa)**.
+
 pip install -r requirements.txt
 python main.py
