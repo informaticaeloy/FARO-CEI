@@ -182,6 +182,8 @@ git clone https://github.com/informaticaeloy/faro-cei.git
 cd faro-cei
 python -m venv venv
 source venv/bin/activate   # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+python main.py
 ```
 
 
@@ -194,7 +196,6 @@ Consulta el archivo [`LICENSE`](./LICENSE.md) para el texto completo.
 - 🛑 **Uso comercial prohibido** sin permiso expreso por escrito del titular.  
 - ℹ️ GitHub puede mostrar “MPL‑2.0” en el badge automático; sin embargo, este repositorio incluye **términos adicionales NC** que **prevalecen** según la Sección 1.7 de la MPL 2.0.
 
-Para licencias comerciales, contacta con: **(tu email/empresa)**.
+Para licencias comerciales, contacta con: **@informaticaeloy**.
 
-pip install -r requirements.txt
-python main.py
+
