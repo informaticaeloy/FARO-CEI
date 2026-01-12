@@ -1,0 +1,41 @@
+{
+  "default": "baseline",
+
+  "profiles": {
+    "baseline": {
+      "description": "Fingerprint pasivo estándar",
+      "engines": {
+        "fingerprintjs": true,
+        "thumbmark": false,
+        "broprint": false,
+        "creepjs": false,
+        "detect_incognito": false
+      },
+      "hash_strategy": "baseline"
+    },
+
+    "extended": {
+      "description": "Fingerprint ampliado sin técnicas agresivas",
+      "engines": {
+        "fingerprintjs": true,
+        "thumbmark": true,
+        "broprint": true,
+        "creepjs": false,
+        "detect_incognito": true
+      },
+      "hash_strategy": "extended"
+    },
+
+    "aggressive": {
+      "description": "Fingerprint agresivo / forense",
+      "engines": {
+        "fingerprintjs": true,
+        "thumbmark": true,
+        "broprint": true,
+        "creepjs": true,
+        "detect_incognito": true
+      },
+      "hash_strategy": "aggressive"
+    }
+  }
+}

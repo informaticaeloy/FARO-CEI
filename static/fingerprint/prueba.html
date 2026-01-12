@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>FingerprintJS – Test</title>
+</head>
+<body>
+    <h1>FingerprintJS – Test</h1>
+    <p>Abre la consola del navegador</p>
+
+    <script src="./orchestrator.js"></script>
+    <script>
+        window.runFingerprint()
+            .then(fp => {
+                console.log("FINGERPRINT RESULT:");
+                console.log(fp);
+            })
+            .catch(err => {
+                console.error("Fingerprint error:", err);
+            });
+    </script>
+</body>
+</html>
+

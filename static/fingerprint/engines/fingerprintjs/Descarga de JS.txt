@@ -1,0 +1,27 @@
+POWERSHELL
+==========
+# ESM (última v5)
+Invoke-WebRequest `
+  -Uri "https://openfpcdn.io/fingerprintjs/v5/esm.min.js" `
+  -OutFile "fingerprintjs.esm.min.js"
+
+# IIFE (versión exacta 5.0.1)
+Invoke-WebRequest `
+  -Uri "https://openfpcdn.io/fingerprintjs/v5.0.1/iife.min.js" `
+  -OutFile "fingerprintjs.iife-5.0.1.min.js"
+
+
+CURL
+====
+# ESM (última de la rama v5)
+curl -L -o fingerprintjs.esm.min.js https://openfpcdn.io/fingerprintjs/v5/esm.min.js
+
+# IIFE (última de la rama v5)
+curl -L -o fingerprintjs.iife.min.js https://openfpcdn.io/fingerprintjs/v5/iife.min.js
+
+# UMD (versión exacta 5.0.1)
+curl -L -o fingerprintjs.umd-5.0.1.min.js https://openfpcdn.io/fingerprintjs/v5.0
+
+WGET
+====
+wget -O fingerprintjs.esm.min.js https://openfpcdn

@@ -1,0 +1,38 @@
+Solo señales relativamente estables, no volátiles:
+Fuente		Campo
+-------------------------------------
+FingerprintJS	visitorId
+Navegador	userAgent
+SO		os.name + os.version
+HW		hardwareConcurrency
+HW		deviceMemory
+Timezone	timezone
+Lenguaje	languages
+
+❌ Excluidos deliberadamente (Motivo: reducir falsos negativos)
+
+- IP
+- Canvas/WebGL raw
+- Screen size
+- Fecha/hora
+- País
+
+* El hash será:
+SHA256(JSON_CANONICO_DE_ESTOS_CAMPOS)
+
+* Estructura JSON guardada (preview)
+{
+  "fingerprint_id": "a9c3e2...",
+  "created_at": "2025-12-18T09:12:22Z",
+  "source": {
+    "route": "/baliza/abc",
+    "profile": "baseline"
+  },
+  "hash_inputs": {
+    "...": "..."
+  },
+  "full_payload": {
+    "...": "todo lo recibido del navegador"
+  }
+}
+

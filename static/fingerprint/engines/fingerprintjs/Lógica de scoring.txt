@@ -1,0 +1,8 @@
+Lógica de scoring (resumen ejecutivo)
+Capa			Peso
+===========================
+Identidad fuerte	60%
+Identidad media		30%
+Entorno blando		10%
+
+Score final: 0–100

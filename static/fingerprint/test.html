@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Fingerprint Test</title>
+</head>
+<body>
+  <h1>Fingerprint Test</h1>
+
+  <script src="/static/fingerprint/fingerprintjs.min.js"></script>
+  <script type="module">
+    import "/static/fingerprint/orchestrator.js";
+
+    window.BALIZA_ORIGEN = "TEST-FRONTEND";
+
+    runFingerprint().then(fp => {
+      console.log("Fingerprint completo:", fp);
+    });
+  </script>
+</body>
+</html>
