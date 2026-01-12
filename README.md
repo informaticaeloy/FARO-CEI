@@ -40,7 +40,8 @@ FARO-CEI permite responder con evidencias a preguntas críticas como:
 - ¿Se reutilizan enlaces o recursos fuera de su canal previsto?
 - ¿Existen patrones persistentes entre accesos aparentemente aislados?
 - ¿Estoy perdiendo control real sobre información ya distribuida?
-
+- ¿Hay una IA aprendiendo con mis datos?
+- ¿Algún usuario está subiendo datos a un LLM sin el control del departamento de sistemas?
 ---
 
 ## 🧩 Funcionalidades clave
@@ -125,6 +126,17 @@ FARO-CEI permite responder con evidencias a preguntas críticas como:
   - Bloqueos
 - Persistencia ligera en CSV / JSON.
 - Diseño auditable, transparente y trazable.
+
+---
+
+### 🔹 LLM Prompt injection
+
+- Creando los webhooks adecuados y beacons, podemos intentar identificar si un LLM está accediendo a nuestros datos, mediante la inyección de prompts en:
+  - PNGs
+  - XLSX
+  - PDF
+  - DOCX
+  - URLs
 
 ---
 
