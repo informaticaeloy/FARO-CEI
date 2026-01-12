@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for
 from math import ceil
 
 from utils.auth import requiere_login
-from utils.eventos import cargar_eventos
+from utils.eventos import cargar_eventos, guardar_eventos
 
 dashboard_bp = Blueprint("dashboard", __name__)
 
