@@ -191,8 +191,8 @@ Accede a http://127.0.0.1:8000 en cualquier navegador
 
 ## :closed_lock_with_key: Default password
 
-user: usuario
-pass: usuario
+<p>user: usuario</p>
+<p>pass: usuario</p>
 
 En el primer inicio obliga a cambiar la contraseña inicial por otra con cierta complejidad 
 
