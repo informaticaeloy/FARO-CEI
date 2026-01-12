@@ -1,3 +1,4 @@
+# utils/tipos_y_eventos.py
 import os
 import csv
 

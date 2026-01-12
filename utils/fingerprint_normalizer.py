@@ -1,3 +1,5 @@
+# utils/fingerprint_normalizer.py
+
 import hashlib
 from typing import Dict, Any
 

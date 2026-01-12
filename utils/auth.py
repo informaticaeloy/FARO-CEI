@@ -1,4 +1,4 @@
-# routes/auth.py
+# utils/auth.py
 
 """
 Módulo de autenticación básico.

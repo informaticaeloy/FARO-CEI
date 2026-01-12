@@ -148,6 +148,30 @@ def ensure_eventos_header():
             ])
 
 
+def guardar_eventos(eventos):
+    """
+    Sobrescribe el CSV con la lista de eventos proporcionada.
+
+    Args:
+        eventos (list[dict]): Lista de eventos a guardar
+    """
+    if not eventos:
+        with open(EVENTOS_CSV, "w", newline="", encoding="utf-8") as f:
+            f.write("")  # CSV vacío con cabecera opcional
+        return
+
+    fieldnames = eventos[0].keys()
+
+    try:
+        with open(EVENTOS_CSV, "w", newline="", encoding="utf-8") as f:
+            writer = csv.DictWriter(f, fieldnames=fieldnames)
+            writer.writeheader()
+            writer.writerows(eventos)
+    except Exception as e:
+        print(f"[eventos] Error al guardar eventos: {e}")
+
+
+
 # Al inicio del archivo, tras imports
 #FINGERPRINT_CACHE = {}  # fingerprint_id -> {"TOR": bool, "VPN": bool}
 
