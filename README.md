@@ -190,7 +190,9 @@ python main.py
 Accede a http://127.0.0.1:8000 en cualquier navegador
 
 ## :closed_lock_with_key: Default password
+
 user: usuario
+
 pass: usuario
 
 En el primer inicio obliga a cambiar la contraseña inicial por otra con cierta complejidad 
