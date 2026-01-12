@@ -1,0 +1,872 @@
+/* ===========================================================
+   THEME BASE
+   =========================================================== */
+
+:root {
+    /* Tema oscuro (default) */
+    --bg: #0d0f10;
+    --bg-alt: #15191c;
+    --fg: #c1c8d0;
+    --accent: #27ff87;
+    --accent-soft: rgba(39,255,135,0.12);
+    --danger: #ff4e4e;
+    --warn: #ffb84e;
+    --info: #4ecbff;
+    --scanline: rgba(255,255,255,0.03);
+    --card-shadow: 0px 0px 18px rgba(0,0,0,0.45);
+    --border-color: rgba(255,255,255,0.08);
+    --hover-bg: rgba(255,255,255,0.05);
+    --table-header-bg: rgba(0,0,0,0.3);
+}
+
+/* Tema claro */
+[data-theme="light"],
+:root[data-theme="light"] {
+    --bg: #f8fafc;
+    --bg-alt: #ffffff;
+    --fg: #1e293b;
+    --accent: #059669;
+    --accent-soft: rgba(5,150,105,0.1);
+    --danger: #dc2626;
+    --warn: #d97706;
+    --info: #0284c7;
+    --scanline: rgba(0,0,0,0.02);
+    --card-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    --border-color: rgba(0,0,0,0.1);
+    --hover-bg: rgba(0,0,0,0.04);
+    --table-header-bg: #f1f5f9;
+}
+
+/* Detección automática del tema del sistema */
+@media (prefers-color-scheme: light) {
+    :root:not([data-theme]) {
+        --bg: #f8fafc;
+        --bg-alt: #ffffff;
+        --fg: #1e293b;
+        --accent: #059669;
+        --accent-soft: rgba(5,150,105,0.1);
+        --danger: #dc2626;
+        --warn: #d97706;
+        --info: #0284c7;
+        --scanline: rgba(0,0,0,0.02);
+        --card-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        --border-color: rgba(0,0,0,0.1);
+        --hover-bg: rgba(0,0,0,0.04);
+        --table-header-bg: #f1f5f9;
+    }
+}
+
+/* ===========================================================
+   GLOBAL
+   =========================================================== */
+
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: "Fira Code", "Consolas", "Monaco", "Courier New", monospace;
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.scanlines::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+        to bottom,
+        transparent 0px,
+        transparent 2px,
+        var(--scanline) 3px
+    );
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.5;
+}
+
+/* ===========================================================
+   SIDEBAR
+   =========================================================== */
+
+.sidebar {
+    width: 260px;
+    background: var(--bg-alt);
+    box-shadow: var(--card-shadow);
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    border-right: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+}
+
+.sidebar h2 {
+    margin-top: 0;
+    margin-bottom: 24px;
+    color: var(--accent);
+    letter-spacing: 1px;
+    font-size: 1.25rem;
+    border-bottom: 2px solid var(--accent-soft);
+    padding-bottom: 10px;
+}
+
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.sidebar a {
+    color: var(--fg);
+    text-decoration: none;
+    padding: 12px 16px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.2s ease;
+    font-size: 0.95rem;
+}
+
+.sidebar a:hover {
+    background: var(--accent-soft);
+    color: var(--accent);
+    transform: translateX(4px);
+}
+
+.sidebar a i {
+    width: 20px;
+    text-align: center;
+}
+
+/* Theme Switcher */
+.theme-switcher {
+    margin-top: auto;
+    padding-top: 20px;
+    display: flex;
+    gap: 8px;
+    border-top: 1px solid var(--border-color);
+    padding-top: 20px;
+}
+
+.theme-switcher button {
+    flex: 1;
+    background: var(--bg);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.theme-switcher button:hover {
+    background: var(--accent-soft);
+    transform: translateY(-2px);
+}
+
+.theme-switcher button.active {
+    background: var(--accent);
+    color: var(--bg-alt);
+    font-weight: 600;
+}
+
+/* ===========================================================
+   MAIN VIEW
+   =========================================================== */
+
+.main {
+    flex: 1;
+    overflow-y: auto;
+    padding: 30px 40px;
+    transition: background-color 0.3s ease;
+}
+
+/* Cards */
+.card {
+    background: var(--bg-alt);
+    border-left: 4px solid var(--accent);
+    padding: 24px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    box-shadow: var(--card-shadow);
+    transition: all 0.3s ease;
+    border: 1px solid var(--border-color);
+}
+
+.card:hover {
+    box-shadow: var(--card-shadow), 0 0 0 1px var(--accent-soft);
+}
+
+/* Headers */
+h1 {
+    color: var(--accent);
+    margin-top: 0;
+    margin-bottom: 24px;
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+h2 {
+    color: var(--accent);
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+h3 {
+    color: var(--fg);
+    opacity: 0.9;
+    margin-top: 0;
+    margin-bottom: 16px;
+    font-size: 1.25rem;
+    font-weight: 500;
+}
+
+/* ===========================================================
+   EVENT TABLE
+   =========================================================== */
+
+.table-wrapper {
+    overflow-x: auto;
+    margin-top: 16px;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-alt);
+}
+
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: var(--bg-alt);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+table thead {
+    background: var(--table-header-bg);
+}
+
+table thead th {
+    color: var(--fg);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid var(--border-color);
+    padding: 16px 20px;
+}
+
+table tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+table tbody td {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.95rem;
+    vertical-align: middle;
+}
+
+table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+table tbody tr:hover {
+    background: var(--hover-bg);
+}
+
+/* ===========================================================
+   BADGES
+   =========================================================== */
+
+.badge {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    letter-spacing: 0.3px;
+    line-height: 1;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.badge-event {
+    background: var(--accent-soft);
+    color: var(--accent);
+    border-color: var(--accent-soft);
+}
+
+.badge-warn {
+    background: rgba(255,184,78,0.15);
+    color: var(--warn);
+    border-color: rgba(255,184,78,0.2);
+}
+
+.badge-danger {
+    background: rgba(255,78,78,0.15);
+    color: var(--danger);
+    border-color: rgba(255,78,78,0.2);
+}
+
+.badge-info {
+    background: rgba(78,203,255,0.15);
+    color: var(--info);
+    border-color: rgba(78,203,255,0.2);
+}
+
+/* ===========================================================
+   PAGINATION
+   =========================================================== */
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 24px;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.pagination a {
+    padding: 10px 16px;
+    border-radius: 8px;
+    background: var(--bg-alt);
+    border: 1px solid var(--border-color);
+    color: var(--fg);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+    min-width: 42px;
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pagination a:hover {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    color: var(--accent);
+    transform: translateY(-2px);
+}
+
+/* Active page */
+.pagination .active {
+    background: var(--accent);
+    color: var(--bg-alt);
+    border-color: var(--accent);
+    font-weight: 600;
+}
+
+/* ===========================================================
+   FILTERS
+   =========================================================== */
+
+.filters {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.filters label {
+    color: var(--fg);
+    opacity: 0.8;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.filters select,
+.filters input {
+    background: var(--bg-alt);
+    color: var(--fg);
+    border: 1px solid var(--border-color);
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    min-width: 180px;
+    transition: all 0.2s ease;
+}
+
+.filters select:focus,
+.filters input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+/* ===========================================================
+   BUTTONS
+   =========================================================== */
+
+.btn {
+    background: var(--accent);
+    color: #000;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-family: inherit;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.btn-danger {
+    background: var(--danger);
+    color: #fff;
+}
+
+.btn-warn {
+    background: var(--warn);
+    color: #000;
+}
+
+.btn-info {
+    background: var(--info);
+    color: #000;
+}
+
+.btn-outline {
+    background: transparent;
+    color: var(--accent);
+    border: 2px solid var(--accent);
+}
+
+.btn-outline:hover {
+    background: var(--accent-soft);
+}
+
+/* ===========================================================
+   ASCII CHART AREA
+   =========================================================== */
+
+.ascii-chart {
+    font-family: "Fira Code", monospace;
+    background: var(--bg-alt);
+    color: var(--accent);
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 20px;
+    white-space: pre;
+    overflow-x: auto;
+    box-shadow: var(--card-shadow);
+    border: 1px solid var(--border-color);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.ascii-chart::-webkit-scrollbar {
+    height: 8px;
+}
+
+.ascii-chart::-webkit-scrollbar-track {
+    background: var(--bg);
+    border-radius: 4px;
+}
+
+.ascii-chart::-webkit-scrollbar-thumb {
+    background: var(--accent);
+    border-radius: 4px;
+}
+
+/* ===========================================================
+   LOGIN
+   =========================================================== */
+
+.login-box {
+    width: 400px;
+    margin: 100px auto;
+    background: var(--bg-alt);
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: var(--card-shadow);
+    border: 1px solid var(--border-color);
+}
+
+.login-box h1 {
+    text-align: center;
+    margin-bottom: 32px;
+    color: var(--accent);
+}
+
+.login-box input {
+    width: 100%;
+    padding: 14px 18px;
+    margin-top: 12px;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    background: var(--bg);
+    color: var(--fg);
+    font-family: inherit;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+}
+
+.login-box input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.login-box button {
+    margin-top: 24px;
+    width: 100%;
+    padding: 16px;
+    font-size: 1rem;
+}
+
+/* ===========================================================
+   ICONOS FONT AWESOME
+   =========================================================== */
+
+/* Contenedor de iconos */
+.icon-container {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+/* Tamaño y margen por defecto */
+.icon-os,
+.icon-nav {
+    font-size: 1.2rem;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+/* === Sistemas Operativos === */
+.icon-windows  { color: #00A4EF !important; }
+.icon-android  { color: #3DDC84 !important; }
+.icon-apple    { color: #555555 !important; }
+.icon-chromeos { color: #4285F4 !important; }
+.icon-linux    { color: #000000 !important; }
+.icon-ubuntu   { color: #E95420 !important; }
+.icon-redhat   { color: #EE0000 !important; }
+.icon-debian   { color: #A81D33 !important; }
+.icon-fedora   { color: #294172 !important; }
+.icon-centos   { color: #262577 !important; }
+.icon-arch     { color: #1793D1 !important; }
+.icon-opensuse { color: #73BA25 !important; }
+.icon-alpine   { color: #0D597F !important; }
+.icon-freebsd  { color: #AB2B28 !important; }
+.icon-openbsd  { color: #F2CA00 !important; }
+.icon-netbsd   { color: #E04E39 !important; }
+.icon-solaris  { color: #0078D4 !important; }
+.icon-aix      { color: #1F70C1 !important; }
+.icon-hpux     { color: #0096D6 !important; }
+.icon-harmonyos,
+.icon-kaios,
+.icon-tizen,
+.icon-blackberry,
+.icon-server,
+.icon-iot,
+.icon-unknown {
+    color: #6B7280 !important;
+}
+
+/* === Navegadores === */
+.icon-edge     { color: #0078D7 !important; }
+.icon-chrome   { color: #4285F4 !important; }
+.icon-chromium { color: #3266D5 !important; }
+.icon-firefox  { color: #FF7139 !important; }
+.icon-safari   { color: #0FB5EE !important; }
+.icon-opera    { color: #E50914 !important; }
+.icon-operagx  { color: #E50914 !important; }
+.icon-brave    { color: #FB542B !important; }
+.icon-vivaldi  { color: #EF3939 !important; }
+.icon-tor      { color: #7D4698 !important; }
+.icon-ie       { color: #1EBBEE !important; }
+.icon-yandex   { color: #FF0000 !important; }
+.icon-samsung  { color: #0366D6 !important; }
+.icon-uc       { color: #FF6A00 !important; }
+
+/* Ajustes para modo claro - mejora contraste */
+[data-theme="light"] .icon-linux,
+:root[data-theme="light"] .icon-linux {
+    color: #333333 !important; /* Más visible en fondo claro */
+}
+
+[data-theme="light"] .icon-apple,
+:root[data-theme="light"] .icon-apple {
+    color: #000000 !important; /* Negro puro para mejor contraste */
+}
+
+/* ===========================================================
+   BADGES DE TIPOS DE EVENTOS (específicos)
+   =========================================================== */
+
+.badge-custom {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: 1px solid;
+    gap: 6px;
+}
+
+.badge-custom i {
+    font-size: 0.9rem;
+}
+
+/* Estilos específicos para modo claro/oscuro */
+[data-theme="light"] .badge-custom {
+    border-color: rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+[data-theme="dark"] .badge-custom,
+:root:not([data-theme="light"]) .badge-custom {
+    border-color: rgba(255,255,255,0.1);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+/* ===========================================================
+   UTILITIES
+   =========================================================== */
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--accent);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--accent);
+    opacity: 0.8;
+}
+
+/* Selección de texto */
+::selection {
+    background: var(--accent-soft);
+    color: var(--accent);
+}
+
+/* Focus outlines */
+:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+/* Loading states */
+.loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+/* Empty states */
+.empty-state {
+    text-align: center;
+    padding: 60px 40px;
+    color: var(--fg);
+    opacity: 0.6;
+}
+
+.empty-state i {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    color: var(--accent);
+    opacity: 0.5;
+}
+
+/* ===========================================================
+   RESPONSIVE
+   =========================================================== */
+
+@media (max-width: 1024px) {
+    .sidebar {
+        width: 220px;
+        padding: 16px;
+    }
+
+    .main {
+        padding: 20px 24px;
+    }
+}
+
+@media (max-width: 768px) {
+    body {
+        flex-direction: column;
+        overflow-y: auto;
+    }
+
+    .sidebar {
+        width: 100%;
+        height: auto;
+        flex-direction: row;
+        flex-wrap: wrap;
+        padding: 16px;
+    }
+
+    .sidebar-nav {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .sidebar a {
+        padding: 8px 12px;
+    }
+
+    .theme-switcher {
+        margin-top: 0;
+        margin-left: auto;
+        border-top: none;
+        padding-top: 0;
+        width: auto;
+    }
+
+    .main {
+        padding: 20px;
+    }
+
+    .filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filters select,
+    .filters input {
+        width: 100%;
+    }
+
+    .login-box {
+        width: 90%;
+        margin: 40px auto;
+        padding: 30px 24px;
+    }
+}
+
+@media (max-width: 480px) {
+    .sidebar h2 {
+        font-size: 1.1rem;
+    }
+
+    .sidebar a {
+        font-size: 0.9rem;
+        padding: 8px 10px;
+    }
+
+    h1 {
+        font-size: 1.5rem;
+    }
+
+    h2 {
+        font-size: 1.25rem;
+    }
+
+    .card {
+        padding: 20px 16px;
+    }
+
+    .table-wrapper {
+        margin-left: -16px;
+        margin-right: -16px;
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+    }
+}
+
+/* ===========================================================
+   ANIMATIONS
+   =========================================================== */
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease forwards;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+.pulse {
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* ===========================================================
+   PRINT STYLES
+   =========================================================== */
+
+@media print {
+    .sidebar,
+    .theme-switcher,
+    .btn,
+    .filters {
+        display: none !important;
+    }
+
+    body {
+        overflow: visible;
+        height: auto;
+        background: white !important;
+        color: black !important;
+    }
+
+    .main {
+        overflow: visible;
+        padding: 20px;
+    }
+
+    .card {
+        box-shadow: none !important;
+        border: 1px solid #ddd !important;
+        page-break-inside: avoid;
+    }
+
+    table {
+        border: 1px solid #ddd;
+    }
+
+    .badge {
+        border: 1px solid #000;
+    }
+}
