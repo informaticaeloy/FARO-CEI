@@ -14,7 +14,7 @@
   <a href="#"><img alt="CI" src="https://img.shields.io/badge/GitHub_Actions-CI-blue"></a>
   <a href="#"><img alt="Stars" src="https://img.shields.io/github/stars/informaticaeloy/faro-cei"></a>
   <img alt="License" src="https://img.shields.io/badge/License-MPL--2.0--NC-blue">
-  <a href="#"><img alt="Python" src="https://img.shields.io/badge/Python-3.10+-blue"></a>
+  <a href="#"><img alt="Python" src="https://img.shields.io/badge/Python-3.9.5-blue"><img alt="Python" src="https://img.shields.io/badge/Python-3.10+-blue"></a>
   <a href="#"><img alt="Status" src="https://img.shields.io/badge/Status-Active-success"></a>
 </p>
 
