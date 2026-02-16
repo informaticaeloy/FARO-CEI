@@ -188,6 +188,7 @@ FARO-CEI aporta **control activo sobre la exposición de la información**, no s
 ---
 
 ## 🚀 Instalación rápida
+### 🐧 Linux
 
 ```bash
 git clone https://github.com/informaticaeloy/faro-cei.git
@@ -197,7 +198,15 @@ source venv/bin/activate   # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 python main.py
 ```
-
+### 💻 Windows
+```bash
+git clone https://github.com/informaticaeloy/faro-cei.git
+cd faro-cei
+python -m venv venv
+venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+python main.py
+```
 ## :metal: Iniciar la aplicación
 Accede a http://127.0.0.1:8000 en cualquier navegador
 
